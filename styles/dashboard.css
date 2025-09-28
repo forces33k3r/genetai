@@ -1,0 +1,339 @@
+/* Dashboard Styles */
+
+.dashboard-container {
+    padding: 140px 0 60px;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.dashboard-header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.dashboard-header p {
+    color: #8b949e;
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+}
+
+.dashboard-key-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.key-metric {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 30px 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.key-metric:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    background: rgba(58, 134, 255, 0.1);
+}
+
+.key-metric .metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--primary);
+}
+
+.key-metric .metric-label {
+    font-size: 0.9rem;
+    color: #8b949e;
+    font-weight: 500;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.dashboard-card {
+    background: rgba(22, 27, 34, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid #30363d;
+    border-radius: 15px;
+    padding: 30px;
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.progress-percent {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.progress-bar-large {
+    width: 100%;
+    height: 12px;
+    background: rgba(13, 17, 23, 0.6);
+    border-radius: 6px;
+    margin: 25px 0;
+    overflow: hidden;
+}
+
+.progress-bar-large .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: 6px;
+    transition: width 1s ease-in-out;
+}
+
+.progress-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.progress-stat {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #8b949e;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.contribution-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.contribution-metric {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(13, 17, 23, 0.6);
+    border-radius: 10px;
+    border: 1px solid #30363d;
+}
+
+.metric-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.metric-content .metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 5px;
+}
+
+.metric-content .metric-label {
+    font-size: 0.9rem;
+    color: #8b949e;
+}
+
+.contributions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.contribution-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: rgba(13, 17, 23, 0.6);
+    border-radius: 10px;
+    border: 1px solid #30363d;
+    transition: all 0.3s ease;
+}
+
+.contribution-item:hover {
+    border-color: var(--primary);
+    transform: translateX(5px);
+}
+
+.contributor-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.contributor-avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+}
+
+.contribution-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.contributor-address {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.contribution-time {
+    font-size: 0.8rem;
+    color: #8b949e;
+}
+
+.contribution-amount {
+    font-weight: 700;
+    color: var(--success);
+    font-size: 1.1rem;
+}
+
+.token-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.token-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: rgba(13, 17, 23, 0.6);
+    border-radius: 10px;
+    border: 1px solid #30363d;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.user-menu:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-key-metrics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-key-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .progress-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .token-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .dashboard-header h1 {
+        font-size: 2.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .contribution-item {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .contributor-info {
+        flex-direction: column;
+        text-align: center;
+    }
+}

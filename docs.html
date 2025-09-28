@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - GenetAi</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .docs-container {
+            display: flex;
+            min-height: calc(100vh - 200px);
+            padding-top: 120px;
+        }
+        
+        .docs-sidebar {
+            width: 300px;
+            background: rgba(22, 27, 34, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-right: 1px solid #30363d;
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+            border-radius: 0 15px 15px 0;
+        }
+        
+        .docs-content {
+            flex: 1;
+            padding: 30px 50px;
+            max-width: 800px;
+        }
+        
+        .docs-sidebar h3 {
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .docs-nav {
+            list-style: none;
+        }
+        
+        .docs-nav li {
+            margin-bottom: 10px;
+        }
+        
+        .docs-nav a {
+            color: #8b949e;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+        
+        .docs-nav a:hover {
+            color: var(--primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .docs-nav a.active {
+            color: var(--primary);
+            font-weight: 600;
+            background: rgba(58, 134, 255, 0.1);
+            border-left: 3px solid var(--primary);
+        }
+        
+        .doc-section {
+            margin-bottom: 50px;
+            background: rgba(22, 27, 34, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid #30363d;
+        }
+        
+        .doc-section h2 {
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 2rem;
+        }
+        
+        .doc-section h3 {
+            margin: 30px 0 15px;
+            color: var(--primary);
+        }
+        
+        .code-block {
+            background: rgba(13, 17, 23, 0.8);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            color: #e6edf3;
+        }
+        
+        .gitbook-embed {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            margin-top: 30px;
+            background: rgba(13, 17, 23, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @media (max-width: 768px) {
+            .docs-container {
+                flex-direction: column;
+            }
+            
+            .docs-sidebar {
+                width: 100%;
+                position: static;
+                border-radius: 0;
+            }
+            
+            .docs-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Image -->
+    <div class="background-image"></div>
+    
+    <header>
+        <div class="container">
+            <div class="navbar">
+                <div class="logo">
+                    <i class="fas fa-dna"></i>
+                    <span>GenetAi</span>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="index.html#how-it-works">How It Works</a>
+                    <a href="index.html#features">Features</a>
+                    <a href="index.html#pricing">Pricing</a>
+                    <a href="dashboard.html">Presale</a>
+                    <a href="docs.html" class="active">Documentation</a>
+                </div>
+                <div class="nav-actions">
+                    <button class="btn btn-outline">Login</button>
+                    <button class="btn btn-primary">Get Started</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="docs-container">
+            <div class="docs-sidebar">
+                <h3>Documentation</h3>
+                <ul class="docs-nav">
+                    <li><a href="#getting-started" class="active">Getting Started</a></li>
+                    <li><a href="#api-reference">API Reference</a></li>
+                    <li><a href="#data-format">Data Format</a></li>
+                    <li><a href="#security">Security & Privacy</a></li>
+                    <li><a href="#crypto-payments">Crypto Payments</a></li>
+                    <li><a href="#troubleshooting">Troubleshooting</a></li>
+                </ul>
+            </div>
+            
+            <div class="docs-content">
+                <div class="doc-section" id="getting-started">
+                    <h2>Getting Started with GenetAi</h2>
+                    <p>Welcome to GenetAi documentation. This guide will help you integrate with our genetic analysis platform.</p>
+                    
+                    <h3>Quick Start</h3>
+                    <p>To get started with GenetAi API:</p>
+                    
+                    <div class="code-block">
+                        <pre><code>// Install GenetAi SDK
+npm install genetai-sdk
+
+// Initialize the client
+const { GenetAi } = require('genetai-sdk');
+const client = new GenetAi({
+    apiKey: 'your-api-key',
+    environment: 'production'
+});
+
+// Upload DNA data
+const result = await client.uploadDnaData({
+    file: 'path/to/dna_data.txt',
+    analysisType: 'full'
+});</code></pre>
+                    </div>
+                </div>
+                
+                <div class="doc-section" id="api-reference">
+                    <h2>API Reference</h2>
+                    <p>Complete API documentation for integrating with GenetAi services.</p>
+                    
+                    <h3>Authentication</h3>
+                    <p>All API requests require an API key in the header:</p>
+                    
+                    <div class="code-block">
+                        <pre><code>Authorization: Bearer YOUR_API_KEY</code></pre>
+                    </div>
+                    
+                    <h3>Endpoints</h3>
+                    <p>Base URL: <code>https://api.genetai.com/v1</code></p>
+                </div>
+                
+                <div class="doc-section">
+                    <h2>GitBook Integration</h2>
+                    <p>For complete documentation, visit our GitBook:</p>
+                    
+                    <div class="gitbook-embed">
+                        <div style="text-align: center;">
+                            <i class="fas fa-book" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
+                            <h3>GenetAi GitBook Documentation</h3>
+                            <p>Complete documentation available on GitBook</p>
+                            <a href="#" class="btn btn-primary" style="margin-top: 20px;">Open GitBook</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="logo">
+                        <i class="fas fa-dna"></i>
+                        <span>GenetAi</span>
+                    </div>
+                    <p>Revolutionizing genetic analysis through blockchain technology and AI-powered insights.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html#how-it-works">How It Works</a></li>
+                        <li><a href="index.html#features">Features</a></li>
+                        <li><a href="index.html#pricing">Pricing</a></li>
+                        <li><a href="docs.html">Documentation</a></li>
+                        <li><a href="#">API</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Data Processing</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">Compliance</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 GenetAi. All rights reserved. | Blockchain-powered genetic analysis</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts/main.js"></script>
+</body>
+</html>

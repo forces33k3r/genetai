@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - GenetAi</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Background Image -->
+    <div class="background-image"></div>
+    
+    <header>
+        <div class="container">
+            <div class="navbar">
+                <div class="logo">
+                    <i class="fas fa-dna"></i>
+                    <span>GenetAi</span>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="index.html#how-it-works">How It Works</a>
+                    <a href="index.html#features">Features</a>
+                    <a href="index.html#pricing">Pricing</a>
+                    <a href="dashboard.html" class="active">Presale</a>
+                    <a href="docs.html">Documentation</a>
+                </div>
+                <div class="nav-actions">
+                    <div class="user-menu">
+                        <span>John Doe</span>
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <div class="container">
+            <!-- Dashboard Header with Key Metrics -->
+            <div class="dashboard-header">
+                <h1>Presale Dashboard</h1>
+                <p>Real-time tracking of GenetAi token presale performance</p>
+                
+                <div class="dashboard-key-metrics">
+                    <div class="key-metric">
+                        <div class="metric-value">$2.45M</div>
+                        <div class="metric-label">Total Raised</div>
+                    </div>
+                    <div class="key-metric">
+                        <div class="metric-value">$10M</div>
+                        <div class="metric-label">Presale Goal</div>
+                    </div>
+                    <div class="key-metric">
+                        <div class="metric-value">24.5%</div>
+                        <div class="metric-label">Progress</div>
+                    </div>
+                    <div class="key-metric">
+                        <div class="metric-value">42</div>
+                        <div class="metric-label">Days Left</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Progress Section -->
+                <div class="dashboard-card progress-section">
+                    <div class="card-header">
+                        <h3>Presale Progress</h3>
+                        <span class="progress-percent">24.5%</span>
+                    </div>
+                    <div class="progress-bar-large">
+                        <div class="progress-fill" style="width: 24.5%"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <div class="progress-stat">
+                            <span class="stat-label">Raised</span>
+                            <span class="stat-value">$2,450,000</span>
+                        </div>
+                        <div class="progress-stat">
+                            <span class="stat-label">Target</span>
+                            <span class="stat-value">$10,000,000</span>
+                        </div>
+                        <div class="progress-stat">
+                            <span class="stat-label">Remaining</span>
+                            <span class="stat-value">$7,550,000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contribution Stats -->
+                <div class="dashboard-card contribution-stats">
+                    <div class="card-header">
+                        <h3>Contribution Statistics</h3>
+                    </div>
+                    <div class="contribution-grid">
+                        <div class="contribution-metric">
+                            <div class="metric-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="metric-content">
+                                <div class="metric-value">3,247</div>
+                                <div class="metric-label">Total Contributors</div>
+                            </div>
+                        </div>
+                        <div class="contribution-metric">
+                            <div class="metric-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="metric-content">
+                                <div class="metric-value">$754</div>
+                                <div class="metric-label">Average Contribution</div>
+                            </div>
+                        </div>
+                        <div class="contribution-metric">
+                            <div class="metric-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="metric-content">
+                                <div class="metric-value">$48,500</div>
+                                <div class="metric-label">Largest Contribution</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Contributions -->
+                <div class="dashboard-card recent-contributions">
+                    <div class="card-header">
+                        <h3>Recent Contributions</h3>
+                        <button class="btn btn-outline btn-sm">View All</button>
+                    </div>
+                    <div class="contributions-list">
+                        <div class="contribution-item">
+                            <div class="contributor-info">
+                                <div class="contributor-avatar">0x8f...4c2a</div>
+                                <div class="contribution-details">
+                                    <span class="contributor-address">0x8f7d...4c2a</span>
+                                    <span class="contribution-time">2 minutes ago</span>
+                                </div>
+                            </div>
+                            <div class="contribution-amount">+$12,500</div>
+                        </div>
+                        <div class="contribution-item">
+                            <div class="contributor-info">
+                                <div class="contributor-avatar">0x3b...9e1f</div>
+                                <div class="contribution-details">
+                                    <span class="contributor-address">0x3b2a...9e1f</span>
+                                    <span class="contribution-time">15 minutes ago</span>
+                                </div>
+                            </div>
+                            <div class="contribution-amount">+$5,200</div>
+                        </div>
+                        <div class="contribution-item">
+                            <div class="contributor-info">
+                                <div class="contributor-avatar">0x6d...7b34</div>
+                                <div class="contribution-details">
+                                    <span class="contributor-address">0x6d91...7b34</span>
+                                    <span class="contribution-time">1 hour ago</span>
+                                </div>
+                            </div>
+                            <div class="contribution-amount">+$23,100</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Token Metrics -->
+                <div class="dashboard-card token-metrics">
+                    <div class="card-header">
+                        <h3>Token Metrics</h3>
+                    </div>
+                    <div class="token-stats">
+                        <div class="token-stat">
+                            <span class="stat-label">Token Price</span>
+                            <span class="stat-value">$0.15</span>
+                        </div>
+                        <div class="token-stat">
+                            <span class="stat-label">Tokens Sold</span>
+                            <span class="stat-value">16.3M</span>
+                        </div>
+                        <div class="token-stat">
+                            <span class="stat-label">Total Supply</span>
+                            <span class="stat-value">100M</span>
+                        </div>
+                        <div class="token-stat">
+                            <span class="stat-label">Hard Cap</span>
+                            <span class="stat-value">$10M</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="logo">
+                        <i class="fas fa-dna"></i>
+                        <span>GenetAi</span>
+                    </div>
+                    <p>Revolutionizing genetic analysis through blockchain technology and AI-powered insights.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html#how-it-works">How It Works</a></li>
+                        <li><a href="index.html#features">Features</a></li>
+                        <li><a href="index.html#pricing">Pricing</a></li>
+                        <li><a href="docs.html">Documentation</a></li>
+                        <li><a href="#">API</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Data Processing</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">Compliance</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 GenetAi. All rights reserved. | Blockchain-powered genetic analysis</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts/dashboard.js"></script>
+</body>
+</html>

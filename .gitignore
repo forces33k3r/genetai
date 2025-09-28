@@ -1,0 +1,77 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+.nyc_output/
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build outputs
+dist/
+build/
+.out/
+.next/
+
+# Vercel
+.vercel
+
+# Large files
+*.zip
+*.rar
+*.tar.gz
+
+# Sensitive files
+*.pem
+*.key
+*.crt
+*.csr
+
+# Temporary files
+*.tmp
+*.temp
+
+# DNA data files (never commit raw genetic data!)
+*.vcf
+*.23andme
+*.ftdna
+*.ancestry
+*.genome
+
+# Backup files
+*.bak
+*.backup
