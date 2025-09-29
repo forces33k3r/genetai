@@ -113,3 +113,97 @@ document.addEventListener('DOMContentLoaded', function() {
 // Set initial body opacity for fade-in effect
 document.body.style.opacity = '0';
 document.body.style.transition = 'opacity 0.5s ease';
+
+// Enhanced Crypto functionality helpers
+function selectPayment(method) {
+    document.querySelectorAll('.payment-option').forEach(opt => {
+        opt.classList.remove('selected');
+    });
+    event.currentTarget.classList.add('selected');
+}
+
+function setAmount(amount) {
+    document.getElementById('contributionAmount').value = amount;
+    calculateTokens(amount);
+}
+
+function calculateTokens(ethAmount) {
+    const tokenPrice = 0.0004; // Will be updated from contract
+    const priceElement = document.getElementById('tokenPriceDisplay');
+    if (priceElement) {
+        const displayedPrice = parseFloat(priceElement.textContent.replace(' ETH', ''));
+        if (!isNaN(displayedPrice) && displayedPrice > 0) {
+            tokenPrice = displayedPrice;
+        }
+    }
+    
+    const tokens = ethAmount / tokenPrice;
+    document.getElementById('tokenAmount').textContent = tokens.toFixed(2);
+}
+
+async function contribute() {
+    const amount = parseFloat(document.getElementById('contributionAmount').value);
+    
+    if (!amount || amount <= 0) {
+        alert('Please enter a valid amount');
+        return;
+    }
+
+    if (window.genetaiCrypto && window.genetaiCrypto.isConnected) {
+        const success = await window.genetaiCrypto.contributeETH(amount);
+        if (success) {
+            // Reset form
+            document.getElementById('contributionAmount').value = '';
+            document.getElementById('tokenAmount').textContent = '0';
+        }
+    } else {
+        alert('Please connect your wallet first');
+    }
+}
+
+async function claimTokens() {
+    if (window.genetaiCrypto && window.genetaiCrypto.isConnected) {
+        const success = await window.genetaiCrypto.claimTokens();
+        if (success) {
+            // Update UI
+        }
+    } else {
+        alert('Please connect your wallet first');
+    }
+}
+
+// Update UI based on wallet connection
+function updateUserInterface() {
+    const userStats = document.getElementById('userStats');
+    const claimSection = document.getElementById('claimSection');
+    
+    if (window.genetaiCrypto && window.genetaiCrypto.isConnected) {
+        if (userStats) userStats.style.display = 'block';
+        // Show claim section if presale ended (you'll need to add this logic)
+        if (claimSection) claimSection.style.display = 'block';
+        
+        // Update user balance periodically
+        setInterval(async () => {
+            if (window.genetaiCrypto.isConnected) {
+                const balance = await window.genetaiCrypto.getBalance();
+                document.getElementById('userBalance').textContent = `${parseFloat(balance).toFixed(4)} ETH`;
+            }
+        }, 10000);
+    } else {
+        if (userStats) userStats.style.display = 'none';
+        if (claimSection) claimSection.style.display = 'none';
+    }
+}
+
+// Update token amount when input changes
+document.addEventListener('DOMContentLoaded', function() {
+    const amountInput = document.getElementById('contributionAmount');
+    if (amountInput) {
+        amountInput.addEventListener('input', function() {
+            calculateTokens(parseFloat(this.value) || 0);
+        });
+    }
+    
+    // Watch for connection changes
+    setInterval(updateUserInterface, 2000);
+});

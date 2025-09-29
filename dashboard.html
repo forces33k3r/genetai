@@ -6,8 +6,6 @@
     <title>Dashboard - GenetAi</title>
     <link rel="stylesheet" href="./styles/main.css">
     <link rel="stylesheet" href="./styles/dashboard.css">
-    <script src="./scripts/main.js"></script>
-    <script src="./scripts/dashboard.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -30,10 +28,12 @@
                     <a href="docs.html">Documentation</a>
                 </div>
                 <div class="nav-actions">
-                    <div class="user-menu">
-                        <span>John Doe</span>
-                        <div class="user-avatar">
-                            <i class="fas fa-user"></i>
+                    <div class="wallet-connect">
+                        <div class="wallet-status disconnected" id="walletStatus">Not Connected</div>
+                        <button class="btn btn-primary" id="connectWallet">Connect Wallet</button>
+                        <div class="wallet-info">
+                            <div class="wallet-address" id="walletAddress" style="display: none;"></div>
+                            <div class="wallet-type" id="walletType" style="display: none;"></div>
                         </div>
                     </div>
                 </div>
@@ -43,26 +43,26 @@
 
     <div class="dashboard-container">
         <div class="container">
-            <!-- Dashboard Header with Key Metrics -->
+            <!-- Dashboard Header with Live Data -->
             <div class="dashboard-header">
-                <h1>Presale Dashboard</h1>
-                <p>Real-time tracking of GenetAi token presale performance</p>
+                <h1>Live Presale Dashboard</h1>
+                <p>Real-time blockchain data from Ethereum Mainnet</p>
                 
                 <div class="dashboard-key-metrics">
                     <div class="key-metric">
-                        <div class="metric-value">$2.45M</div>
-                        <div class="metric-label">Total Raised</div>
+                        <div class="metric-value" id="totalRaised">Loading...</div>
+                        <div class="metric-label">Total Raised (ETH)</div>
                     </div>
                     <div class="key-metric">
-                        <div class="metric-value">$10M</div>
-                        <div class="metric-label">Presale Goal</div>
+                        <div class="metric-value" id="hardCap">Loading...</div>
+                        <div class="metric-label">Hard Cap (ETH)</div>
                     </div>
                     <div class="key-metric">
-                        <div class="metric-value">24.5%</div>
+                        <div class="metric-value" id="presaleProgress">Loading...</div>
                         <div class="metric-label">Progress</div>
                     </div>
                     <div class="key-metric">
-                        <div class="metric-value">42</div>
+                        <div class="metric-value" id="daysLeft">Loading...</div>
                         <div class="metric-label">Days Left</div>
                     </div>
                 </div>
@@ -70,35 +70,36 @@
 
             <!-- Main Dashboard Grid -->
             <div class="dashboard-grid">
-                <!-- Progress Section -->
+                <!-- Live Progress Section -->
                 <div class="dashboard-card progress-section">
                     <div class="card-header">
-                        <h3>Presale Progress</h3>
-                        <span class="progress-percent">24.5%</span>
+                        <h3>Live Presale Progress</h3>
+                        <span class="progress-percent" id="progressPercent">0%</span>
                     </div>
                     <div class="progress-bar-large">
-                        <div class="progress-fill" style="width: 24.5%"></div>
+                        <div class="progress-fill" id="progressBarFill" style="width: 0%"></div>
                     </div>
                     <div class="progress-stats">
                         <div class="progress-stat">
-                            <span class="stat-label">Raised</span>
-                            <span class="stat-value">$2,450,000</span>
+                            <span class="stat-label">Raised (ETH)</span>
+                            <span class="stat-value" id="raisedETH">0</span>
                         </div>
                         <div class="progress-stat">
-                            <span class="stat-label">Target</span>
-                            <span class="stat-value">$10,000,000</span>
+                            <span class="stat-label">Target (ETH)</span>
+                            <span class="stat-value" id="targetETH">0</span>
                         </div>
                         <div class="progress-stat">
-                            <span class="stat-label">Remaining</span>
-                            <span class="stat-value">$7,550,000</span>
+                            <span class="stat-label">Remaining (ETH)</span>
+                            <span class="stat-value" id="remainingETH">0</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Contribution Stats -->
+                <!-- Live Contribution Stats -->
                 <div class="dashboard-card contribution-stats">
                     <div class="card-header">
-                        <h3>Contribution Statistics</h3>
+                        <h3>Live Contribution Statistics</h3>
+                        <div class="last-updated" id="lastUpdated"></div>
                     </div>
                     <div class="contribution-grid">
                         <div class="contribution-metric">
@@ -106,7 +107,7 @@
                                 <i class="fas fa-users"></i>
                             </div>
                             <div class="metric-content">
-                                <div class="metric-value">3,247</div>
+                                <div class="metric-value" id="totalContributors">0</div>
                                 <div class="metric-label">Total Contributors</div>
                             </div>
                         </div>
@@ -115,7 +116,7 @@
                                 <i class="fas fa-money-bill-wave"></i>
                             </div>
                             <div class="metric-content">
-                                <div class="metric-value">$754</div>
+                                <div class="metric-value" id="averageContribution">0 ETH</div>
                                 <div class="metric-label">Average Contribution</div>
                             </div>
                         </div>
@@ -124,75 +125,156 @@
                                 <i class="fas fa-chart-bar"></i>
                             </div>
                             <div class="metric-content">
-                                <div class="metric-value">$48,500</div>
-                                <div class="metric-label">Largest Contribution</div>
+                                <div class="metric-value" id="tokenPrice">0 ETH</div>
+                                <div class="metric-label">Token Price</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Recent Contributions -->
-                <div class="dashboard-card recent-contributions">
+                <!-- Live Crypto Contribution Section -->
+                <div class="dashboard-card crypto-payment">
                     <div class="card-header">
-                        <h3>Recent Contributions</h3>
-                        <button class="btn btn-outline btn-sm">View All</button>
+                        <h3>Live Contribution</h3>
+                        <div class="wallet-connect">
+                            <div class="wallet-status disconnected" id="walletStatusDashboard">Not Connected</div>
+                            <button class="btn btn-primary" id="connectWalletDashboard">Connect Wallet</button>
+                            <div class="wallet-info">
+                                <div class="wallet-address" id="walletAddressDashboard" style="display: none;"></div>
+                                <div class="wallet-type" id="walletTypeDashboard" style="display: none;"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="contributions-list">
-                        <div class="contribution-item">
-                            <div class="contributor-info">
-                                <div class="contributor-avatar">0x8f...4c2a</div>
-                                <div class="contribution-details">
-                                    <span class="contributor-address">0x8f7d...4c2a</span>
-                                    <span class="contribution-time">2 minutes ago</span>
-                                </div>
-                            </div>
-                            <div class="contribution-amount">+$12,500</div>
+
+                    <!-- Live Contract Limits -->
+                    <div class="contribution-limits">
+                        <div class="limit-item">
+                            <div class="limit-value" id="minContribution">Loading...</div>
+                            <div class="limit-label">Min Contribution</div>
                         </div>
-                        <div class="contribution-item">
-                            <div class="contributor-info">
-                                <div class="contributor-avatar">0x3b...9e1f</div>
-                                <div class="contribution-details">
-                                    <span class="contributor-address">0x3b2a...9e1f</span>
-                                    <span class="contribution-time">15 minutes ago</span>
-                                </div>
-                            </div>
-                            <div class="contribution-amount">+$5,200</div>
+                        <div class="limit-item">
+                            <div class="limit-value" id="maxContribution">Loading...</div>
+                            <div class="limit-label">Max Contribution</div>
                         </div>
-                        <div class="contribution-item">
-                            <div class="contributor-info">
-                                <div class="contributor-avatar">0x6d...7b34</div>
-                                <div class="contribution-details">
-                                    <span class="contributor-address">0x6d91...7b34</span>
-                                    <span class="contribution-time">1 hour ago</span>
-                                </div>
+                    </div>
+
+                    <!-- Live User Stats -->
+                    <div class="user-stats" id="userStats" style="display: none;">
+                        <div class="user-stat-item">
+                            <span>Your Contribution:</span>
+                            <span id="userContribution">0 ETH</span>
+                        </div>
+                        <div class="user-stat-item">
+                            <span>Your Balance:</span>
+                            <span id="userBalance">0 ETH</span>
+                        </div>
+                        <div class="user-stat-item">
+                            <span>Your Tokens:</span>
+                            <span id="userTokens">0 $GENE</span>
+                        </div>
+                    </div>
+
+                    <div class="payment-options">
+                        <div class="payment-option selected" onclick="selectPayment('eth')">
+                            <div class="payment-icon">
+                                <i class="fab fa-ethereum"></i>
                             </div>
-                            <div class="contribution-amount">+$23,100</div>
+                            <h4>ETH</h4>
+                            <p>Ethereum Mainnet</p>
+                        </div>
+                    </div>
+
+                    <div class="contribution-form">
+                        <input type="number" class="amount-input" id="contributionAmount" placeholder="Enter ETH amount" step="0.001" min="0.01">
+                        
+                        <div class="amount-buttons">
+                            <button class="amount-btn" onclick="setAmount(0.1)">0.1 ETH</button>
+                            <button class="amount-btn" onclick="setAmount(0.5)">0.5 ETH</button>
+                            <button class="amount-btn" onclick="setAmount(1)">1 ETH</button>
+                            <button class="amount-btn" onclick="setAmount(5)">5 ETH</button>
+                        </div>
+
+                        <div style="margin: 15px 0; text-align: center; color: #8b949e;">
+                            Token Price: <span id="tokenPriceDisplay">Loading...</span>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="contribute()" style="width: 100%;" id="contributeBtn">
+                            Contribute to Presale
+                        </button>
+                        
+                        <div style="margin-top: 15px; text-align: center; color: #8b949e; font-size: 0.9rem;">
+                            You will receive: <span id="tokenAmount">0</span> $GENE tokens
+                        </div>
+
+                        <!-- Claim Section -->
+                        <div class="claim-section" id="claimSection" style="display: none;">
+                            <button class="btn btn-outline" onclick="claimTokens()" style="width: 100%;">
+                                Claim Your Tokens
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Token Metrics -->
+                <!-- Live Token Metrics -->
                 <div class="dashboard-card token-metrics">
                     <div class="card-header">
-                        <h3>Token Metrics</h3>
+                        <h3>Live Token Metrics</h3>
                     </div>
                     <div class="token-stats">
                         <div class="token-stat">
                             <span class="stat-label">Token Price</span>
-                            <span class="stat-value">$0.15</span>
+                            <span class="stat-value" id="liveTokenPrice">Loading...</span>
                         </div>
                         <div class="token-stat">
                             <span class="stat-label">Tokens Sold</span>
-                            <span class="stat-value">16.3M</span>
+                            <span class="stat-value" id="tokensSold">Loading...</span>
                         </div>
                         <div class="token-stat">
                             <span class="stat-label">Total Supply</span>
                             <span class="stat-value">100M</span>
                         </div>
                         <div class="token-stat">
-                            <span class="stat-label">Hard Cap</span>
-                            <span class="stat-value">$10M</span>
+                            <span class="stat-label">Presale Status</span>
+                            <span class="stat-value" id="presaleStatus">Loading...</span>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Contract Information -->
+                <div class="dashboard-card contract-info">
+                    <div class="card-header">
+                        <h3>Contract Information</h3>
+                    </div>
+                    <div class="contract-details">
+                        <div class="contract-item">
+                            <span class="contract-label">Contract Address:</span>
+                            <span class="contract-value" id="contractAddress">0x26BdEe9E66575319D5599569dFB39f543cFA8721</span>
+                        </div>
+                        <div class="contract-item">
+                            <span class="contract-label">Network:</span>
+                            <span class="contract-value">Ethereum Mainnet</span>
+                        </div>
+                        <div class="contract-item">
+                            <span class="contract-label">Block Explorer:</span>
+                            <span class="contract-value">
+                                <a href="https://etherscan.io/address/0x26BdEe9E66575319D5599569dFB39f543cFA8721" target="_blank" style="color: var(--primary);">View on Etherscan</a>
+                            </span>
+                        </div>
+                        <div class="contract-item">
+                            <span class="contract-label">Last Block Update:</span>
+                            <span class="contract-value" id="lastBlockUpdate">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction History -->
+                <div class="dashboard-card transaction-history">
+                    <div class="card-header">
+                        <h3>Recent Blockchain Activity</h3>
+                        <button class="btn btn-outline btn-sm" onclick="refreshTransactions()">Refresh</button>
+                    </div>
+                    <div class="transactions-list" id="transactionsList">
+                        <div class="loading-transactions">Loading live transactions...</div>
                     </div>
                 </div>
             </div>
@@ -247,11 +329,13 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2023 GenetAi. All rights reserved. | Blockchain-powered genetic analysis</p>
+                <p>&copy; 2023 GenetAi. All rights reserved. | Live blockchain data from Ethereum Mainnet</p>
             </div>
         </div>
     </footer>
 
-    <script src="scripts/dashboard.js"></script>
+    <script src="./scripts/main.js"></script>
+    <script src="./scripts/dashboard.js"></script>
+    <script src="./scripts/crypto.js"></script>
 </body>
 </html>
