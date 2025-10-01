@@ -1,12 +1,11 @@
 // Dashboard Configuration
 const CONTRACT_ADDRESS = '0x783Ab31e81A0FA50F3D6a85bF9F2A7f8DDDdC75E';
 const BSC_RPC_URL = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
-const PRESALE_GOAL_USD = 1000000; // $1,000,000
+const PRESALE_GOAL_USD = 1000000;
 const TOKEN_PRICE_BNB = 0.15;
-const BNB_PRICE_USD = 300; // Example price, you might want to fetch this from an API
-const WALLETCONNECT_PROJECT_ID = 'e50f0a4298c581eadf73071430522379';
+const BNB_PRICE_USD = 300;
 
-// Contract ABI (Extended for dashboard functionality)
+// Contract ABI
 const CONTRACT_ABI = [
     {
         "inputs": [],
@@ -79,24 +78,23 @@ class DashboardManager {
         this.contract = null;
         this.userAddress = null;
         this.isConnected = false;
-        this.walletConnectProvider = null;
         this.updateInterval = null;
-        this.walletType = null; // 'metamask' or 'walletconnect'
         this.init();
     }
 
     async init() {
         try {
-            // Initialize contract (will connect Web3 later when wallet connects)
-            this.contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+            // Initialize Web3 for reading contract data
+            this.web3 = new Web3(BSC_RPC_URL);
+            this.contract = new this.web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
             
             // Set up event listeners
             this.setupEventListeners();
             
-            // Check for existing wallet connection
+            // Check for existing MetaMask connection
             await this.checkExistingConnection();
             
-            // Load initial data (even without wallet connection)
+            // Load initial data
             await this.updateDashboard();
             
             // Set up periodic updates
@@ -134,7 +132,6 @@ class DashboardManager {
     }
 
     async checkExistingConnection() {
-        // Check MetaMask first
         if (typeof window.ethereum !== 'undefined') {
             try {
                 const accounts = await window.ethereum.request({ method: 'eth_accounts' });
@@ -145,9 +142,6 @@ class DashboardManager {
                 console.log('No existing MetaMask connection');
             }
         }
-
-        // Check WalletConnect (you might want to implement session persistence)
-        // This is a simplified version - in production, you'd want to check localStorage
     }
 
     async connectMetaMask() {
@@ -162,10 +156,12 @@ class DashboardManager {
                 method: 'eth_requestAccounts' 
             });
             
+            // Switch to BSC Testnet if needed
+            await this.switchToBSCNetwork();
+            
             this.web3 = new Web3(window.ethereum);
             this.userAddress = accounts[0];
             this.isConnected = true;
-            this.walletType = 'metamask';
             
             this.updateWalletDisplay();
             await this.updateUserStats();
@@ -192,74 +188,51 @@ class DashboardManager {
         }
     }
 
-    async connectWalletConnect() {
+    async switchToBSCNetwork() {
         try {
-            // Initialize WalletConnect Provider
-            this.walletConnectProvider = new WalletConnectProvider.default({
-                rpc: {
-                    56: "https://bsc-dataseed.binance.org/",
-                    97: "https://data-seed-prebsc-1-s1.binance.org:8545/" // BSC Testnet
-                },
-                chainId: 97, // BSC Testnet
-                projectId: WALLETCONNECT_PROJECT_ID
+            // BSC Testnet chain ID
+            const chainId = '0x61'; // 97 in decimal
+            
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: chainId }],
             });
-
-            // Enable session (triggers QR Code modal)
-            await this.walletConnectProvider.enable();
-            
-            this.web3 = new Web3(this.walletConnectProvider);
-            const accounts = await this.web3.eth.getAccounts();
-            
-            this.userAddress = accounts[0];
-            this.isConnected = true;
-            this.walletType = 'walletconnect';
-            
-            this.updateWalletDisplay();
-            await this.updateUserStats();
-            await this.updateUserBalance();
-            
-            this.closeWalletDropdown();
-            this.closeModal();
-            
-            // Set up WalletConnect event listeners
-            this.walletConnectProvider.on("accountsChanged", (accounts) => {
-                this.handleAccountsChanged(accounts);
-            });
-
-            this.walletConnectProvider.on("chainChanged", (chainId) => {
-                window.location.reload();
-            });
-
-            this.walletConnectProvider.on("disconnect", (code, reason) => {
-                this.disconnectWallet();
-            });
-
-        } catch (error) {
-            console.error('Error connecting WalletConnect:', error);
-            if (error.message !== 'User closed modal') {
-                alert('Error connecting via WalletConnect. Please try again.');
+        } catch (switchError) {
+            // This error code indicates that the chain has not been added to MetaMask
+            if (switchError.code === 4902) {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [
+                            {
+                                chainId: '0x61',
+                                chainName: 'Binance Smart Chain Testnet',
+                                nativeCurrency: {
+                                    name: 'BNB',
+                                    symbol: 'BNB',
+                                    decimals: 18,
+                                },
+                                rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
+                                blockExplorerUrls: ['https://testnet.bscscan.com/'],
+                            },
+                        ],
+                    });
+                } catch (addError) {
+                    console.error('Error adding BSC Testnet:', addError);
+                }
+            } else {
+                console.error('Error switching to BSC Testnet:', switchError);
             }
         }
     }
 
-    async showWalletConnectQR() {
-        this.openModal();
-        const modalContent = document.getElementById('walletConnectQR');
-        modalContent.innerHTML = '<div class="loading">Loading QR code...</div>';
-
-        try {
-            // WalletConnect will handle the QR code display automatically
-            // This is just a fallback in case we need custom QR display
-            modalContent.innerHTML = `
-                <div style="text-align: center;">
-                    <p>WalletConnect will open a QR code automatically.</p>
-                    <p>If no QR code appears, please check your wallet app.</p>
-                </div>
-            `;
-        } catch (error) {
-            console.error('Error showing QR code:', error);
-            modalContent.innerHTML = '<div class="error">Error loading QR code. Please try again.</div>';
-        }
+    async connectWalletConnect() {
+        alert('WalletConnect integration is being improved. Please use MetaMask for now.');
+        this.closeWalletDropdown();
+        return;
+        
+        // Simplified WalletConnect - will be implemented in future update
+        // For now, we'll just show a message and close the dropdown
     }
 
     handleAccountsChanged(accounts) {
@@ -274,26 +247,12 @@ class DashboardManager {
     }
 
     async disconnectWallet() {
-        // Disconnect WalletConnect if active
-        if (this.walletConnectProvider) {
-            try {
-                await this.walletConnectProvider.disconnect();
-            } catch (error) {
-                console.error('Error disconnecting WalletConnect:', error);
-            }
-            this.walletConnectProvider = null;
-        }
-
-        // Reset all connection states
-        this.web3 = null;
+        this.web3 = new Web3(BSC_RPC_URL);
         this.userAddress = null;
         this.isConnected = false;
-        this.walletType = null;
         
         this.updateWalletDisplay();
-        
-        // Re-initialize contract with basic Web3 for data reading
-        this.contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+        this.contract = new this.web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
     }
 
     updateWalletDisplay() {
@@ -307,20 +266,18 @@ class DashboardManager {
         if (this.isConnected && this.userAddress) {
             const shortAddress = `${this.userAddress.slice(0, 6)}...${this.userAddress.slice(-4)}`;
             
-            walletStatus.textContent = `Connected (${this.walletType})`;
+            walletStatus.textContent = 'Connected';
             walletStatus.className = 'wallet-status connected';
             walletAddress.textContent = shortAddress;
             walletAddress.style.display = 'block';
             
-            connectWalletBtn.textContent = `Connected (${this.walletType})`;
+            connectWalletBtn.textContent = 'Connected';
             connectWalletBtn.disabled = true;
             contributeBtn.disabled = false;
             contributeBtn.textContent = 'Contribute to Presale';
             
-            // Update compact wallet info
             walletInfoCompact.style.display = 'block';
             document.getElementById('walletAddressCompact').textContent = shortAddress;
-            document.getElementById('walletBalanceCompact').textContent = 'Loading balance...';
             
         } else {
             walletStatus.textContent = 'Not Connected';
@@ -366,7 +323,6 @@ class DashboardManager {
             document.getElementById('userTokens').textContent = `${parseInt(userTokens).toLocaleString()} $GENE`;
             document.getElementById('userStats').style.display = 'block';
 
-            // Show claim section if user has contributed
             if (parseFloat(userContributionBNB) > 0) {
                 document.getElementById('claimSection').style.display = 'block';
             }
@@ -378,17 +334,13 @@ class DashboardManager {
 
     async updateDashboard() {
         try {
-            // Use basic Web3 provider for reading contract data (no wallet needed)
-            const readWeb3 = new Web3(BSC_RPC_URL);
-            const contract = new readWeb3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-
             const [totalRaised, totalContributors, tokensSold, presaleEndTime, minContribution, maxContribution] = await Promise.all([
-                contract.methods.totalRaised().call(),
-                contract.methods.totalContributors().call(),
-                contract.methods.tokensSold().call(),
-                contract.methods.presaleEndTime().call(),
-                contract.methods.minContribution().call(),
-                contract.methods.maxContribution().call()
+                this.contract.methods.totalRaised().call(),
+                this.contract.methods.totalContributors().call(),
+                this.contract.methods.tokensSold().call(),
+                this.contract.methods.presaleEndTime().call(),
+                this.contract.methods.minContribution().call(),
+                this.contract.methods.maxContribution().call()
             ]);
 
             this.updateDashboardUI(totalRaised, totalContributors, tokensSold, presaleEndTime, minContribution, maxContribution);
@@ -400,8 +352,7 @@ class DashboardManager {
     }
 
     updateDashboardUI(totalRaised, totalContributors, tokensSold, presaleEndTime, minContribution, maxContribution) {
-        // Convert from wei to BNB
-        const raisedBNB = web3.utils.fromWei(totalRaised, 'ether');
+        const raisedBNB = this.web3.utils.fromWei(totalRaised, 'ether');
         const raisedUSD = (raisedBNB * BNB_PRICE_USD).toLocaleString('en-US', {
             style: 'currency',
             currency: 'USD',
@@ -436,8 +387,8 @@ class DashboardManager {
         document.getElementById('liveTokensSold').textContent = parseInt(tokensSold).toLocaleString();
 
         // Update contribution limits
-        document.getElementById('minContribution').textContent = `${web3.utils.fromWei(minContribution, 'ether')} BNB`;
-        document.getElementById('maxContribution').textContent = `${web3.utils.fromWei(maxContribution, 'ether')} BNB`;
+        document.getElementById('minContribution').textContent = `${this.web3.utils.fromWei(minContribution, 'ether')} BNB`;
+        document.getElementById('maxContribution').textContent = `${this.web3.utils.fromWei(maxContribution, 'ether')} BNB`;
 
         // Update progress bar color
         const progressFill = document.getElementById('progressBarFill');
@@ -500,7 +451,6 @@ class DashboardManager {
 
             alert('Contribution successful! Thank you for participating in the presale.');
             
-            // Refresh data
             await this.updateDashboard();
             await this.updateUserStats();
             await this.updateUserBalance();
@@ -535,8 +485,6 @@ class DashboardManager {
             });
 
             alert('Tokens claimed successfully!');
-            
-            // Refresh data
             await this.updateUserStats();
 
         } catch (error) {
@@ -552,16 +500,7 @@ class DashboardManager {
         }
     }
 
-    openModal() {
-        document.getElementById('walletConnectModal').style.display = 'block';
-    }
-
-    closeModal() {
-        document.getElementById('walletConnectModal').style.display = 'none';
-    }
-
     showFallbackData() {
-        // Show default data if contract connection fails
         document.getElementById('totalRaisedUSD').textContent = '$0';
         document.getElementById('presaleProgress').textContent = '0%';
         document.getElementById('daysLeft').textContent = '30';
@@ -569,7 +508,7 @@ class DashboardManager {
     }
 }
 
-// Global functions for HTML onclick events
+// Global functions
 function setAmount(amount) {
     document.getElementById('contributionAmount').value = amount;
     dashboardManager.calculateTokens(amount);
@@ -596,11 +535,10 @@ function disconnectWallet() {
 }
 
 function closeModal() {
-    dashboardManager.closeModal();
+    document.getElementById('walletConnectModal').style.display = 'none';
 }
 
 function refreshTransactions() {
-    // This would typically fetch transaction history from the blockchain
     const transactionsList = document.getElementById('transactionsList');
     transactionsList.innerHTML = `
         <div class="transaction-item">
@@ -629,15 +567,7 @@ function refreshTransactions() {
     }, 2000);
 }
 
-// Close modal when clicking outside
-window.onclick = function(event) {
-    const modal = document.getElementById('walletConnectModal');
-    if (event.target === modal) {
-        dashboardManager.closeModal();
-    }
-}
-
-// Initialize dashboard when page loads
+// Initialize dashboard
 let dashboardManager;
 document.addEventListener('DOMContentLoaded', function() {
     dashboardManager = new DashboardManager();
