@@ -1,4 +1,4 @@
-// scripts/crypto.js - Complete Web3 Integration for GenetAi
+// scripts/crypto.js - Complete Web3 Integration for BSC Testnet
 
 class GenetAiCrypto {
     constructor() {
@@ -8,11 +8,18 @@ class GenetAiCrypto {
         this.isConnected = false;
         this.walletConnectProvider = null;
         
-        // Contract addresses
-        this.presaleContractAddress = "0x26BdEe9E66575319D5599569dFB39f543cFA8721";
+        // BSC Testnet Configuration
+        this.chainId = 97; // BSC Testnet chain ID
+        this.chainName = "Binance Smart Chain Testnet";
+        this.rpcUrl = "https://data-seed-prebsc-1-s1.binance.org:8545/";
+        this.blockExplorer = "https://testnet.bscscan.com";
         
-        // Contract ABIs (simplified for presale functionality)
+        // Your BSC Testnet Contract Address
+        this.presaleContractAddress = "0x783Ab31e81A0FA50F3D6a85bF9F2A7f8DDDdC75E";
+        
+        // Contract ABIs for your specific contract
         this.presaleABI = [
+            // Presale Information Getters
             "function totalRaised() view returns (uint256)",
             "function hardCap() view returns (uint256)",
             "function totalContributors() view returns (uint256)",
@@ -20,14 +27,27 @@ class GenetAiCrypto {
             "function maxContribution() view returns (uint256)",
             "function minContribution() view returns (uint256)",
             "function presaleEndTime() view returns (uint256)",
+            "function presaleStartTime() view returns (uint256)",
             "function userContributions(address) view returns (uint256)",
+            "function presaleActive() view returns (bool)",
+            "function whitelistEnabled() view returns (bool)",
+            
+            // Presale Actions
             "function contribute() payable",
             "function claimTokens()",
-            "function presaleActive() view returns (bool)"
+            "function withdrawFunds()",
+            
+            // Admin Functions
+            "function setTokenPrice(uint256) external",
+            "function setHardCap(uint256) external",
+            "function setPresaleTimes(uint256, uint256) external",
+            
+            // Events
+            "event Contribution(address indexed user, uint256 amount)",
+            "event TokensClaimed(address indexed user, uint256 amount)"
         ];
         
         // Configuration
-        this.infuraKey = "52a3c204a2b046a192310066efa00c4f";
         this.walletConnectProjectId = "e50f0a4298c581eadf73071430522379";
         
         this.contracts = {};
@@ -45,10 +65,8 @@ class GenetAiCrypto {
     }
 
     async initializeProviders() {
-        // Initialize Infura provider for read operations
-        this.infuraProvider = new ethers.JsonRpcProvider(
-            `https://mainnet.infura.io/v3/${this.infuraKey}`
-        );
+        // Use BSC Testnet RPC directly
+        this.infuraProvider = new ethers.JsonRpcProvider(this.rpcUrl);
         
         // Initialize contracts for read operations
         this.contracts.presale = new ethers.Contract(
@@ -64,7 +82,7 @@ class GenetAiCrypto {
             
             this.walletConnectProvider = await EthereumProvider.init({
                 projectId: this.walletConnectProjectId,
-                chains: [1], // Ethereum Mainnet
+                chains: [97], // BSC Testnet chain ID
                 showQrModal: true,
                 methods: ["eth_sendTransaction", "personal_sign"],
                 events: ["chainChanged", "accountsChanged"]
@@ -84,6 +102,41 @@ class GenetAiCrypto {
 
         } catch (error) {
             console.error('Failed to initialize WalletConnect:', error);
+        }
+    }
+
+    async switchToBSCNetwork() {
+        if (window.ethereum) {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0x61' }], // 97 in hex
+                });
+            } catch (switchError) {
+                // This error code indicates that the chain has not been added to MetaMask
+                if (switchError.code === 4902) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: '0x61',
+                                chainName: 'Binance Smart Chain Testnet',
+                                nativeCurrency: {
+                                    name: 'BNB',
+                                    symbol: 'BNB',
+                                    decimals: 18,
+                                },
+                                rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
+                                blockExplorerUrls: ['https://testnet.bscscan.com/'],
+                            }],
+                        });
+                    } catch (addError) {
+                        console.error('Failed to add BSC Testnet to MetaMask:', addError);
+                        this.showError('Please add BSC Testnet to MetaMask manually');
+                    }
+                }
+                console.error('Failed to switch to BSC Testnet:', switchError);
+            }
         }
     }
 
@@ -119,6 +172,9 @@ class GenetAiCrypto {
                 throw new Error('Please install MetaMask');
             }
 
+            // Switch to BSC Testnet first
+            await this.switchToBSCNetwork();
+
             // Request account access
             const accounts = await window.ethereum.request({
                 method: 'eth_requestAccounts'
@@ -132,12 +188,12 @@ class GenetAiCrypto {
 
             await this.initializeWriteContracts();
             this.updateConnectionStatus();
-            this.showSuccess('MetaMask connected successfully!');
+            this.showSuccess('Connected to BSC Testnet!');
             
             return this.account;
         } catch (error) {
             console.error('Failed to connect MetaMask:', error);
-            this.showError('Failed to connect MetaMask: ' + error.message);
+            this.showError('Failed to connect: ' + error.message);
             return null;
         }
     }
@@ -164,7 +220,7 @@ class GenetAiCrypto {
                 this.updateConnectionStatus();
                 
                 if (!isReconnect) {
-                    this.showSuccess('WalletConnect connected successfully!');
+                    this.showSuccess('WalletConnect connected to BSC Testnet!');
                 }
                 
                 return this.account;
@@ -215,7 +271,9 @@ class GenetAiCrypto {
                 maxContribution,
                 minContribution,
                 presaleEndTime,
-                presaleActive
+                presaleStartTime,
+                presaleActive,
+                whitelistEnabled
             ] = await Promise.all([
                 this.contracts.presale.totalRaised(),
                 this.contracts.presale.hardCap(),
@@ -224,23 +282,44 @@ class GenetAiCrypto {
                 this.contracts.presale.maxContribution(),
                 this.contracts.presale.minContribution(),
                 this.contracts.presale.presaleEndTime(),
-                this.contracts.presale.presaleActive()
+                this.contracts.presale.presaleStartTime(),
+                this.contracts.presale.presaleActive(),
+                this.contracts.presale.whitelistEnabled ? this.contracts.presale.whitelistEnabled() : Promise.resolve(false)
             ]);
 
+            const totalRaisedBNB = parseFloat(ethers.formatEther(totalRaised));
+            const hardCapBNB = parseFloat(ethers.formatEther(hardCap));
+            const progress = hardCapBNB > 0 ? (totalRaisedBNB / hardCapBNB) * 100 : 0;
+
             return {
-                totalRaised: parseFloat(ethers.formatEther(totalRaised)),
-                hardCap: parseFloat(ethers.formatEther(hardCap)),
+                totalRaised: totalRaisedBNB,
+                hardCap: hardCapBNB,
                 totalContributors: parseInt(totalContributors),
                 tokenPrice: parseFloat(ethers.formatEther(tokenPrice)),
                 maxContribution: parseFloat(ethers.formatEther(maxContribution)),
                 minContribution: parseFloat(ethers.formatEther(minContribution)),
                 presaleEndTime: parseInt(presaleEndTime),
+                presaleStartTime: parseInt(presaleStartTime),
                 presaleActive: presaleActive,
-                progress: (parseFloat(ethers.formatEther(totalRaised)) / parseFloat(ethers.formatEther(hardCap))) * 100
+                whitelistEnabled: whitelistEnabled,
+                progress: progress
             };
         } catch (error) {
             console.error('Error fetching presale data:', error);
-            return null;
+            // Return default values if contract call fails
+            return {
+                totalRaised: 0,
+                hardCap: 100, // 100 BNB hard cap
+                totalContributors: 0,
+                tokenPrice: 0.0004, // 0.0004 BNB per token
+                maxContribution: 10, // 10 BNB max
+                minContribution: 0.01, // 0.01 BNB min
+                presaleEndTime: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60), // 30 days from now
+                presaleStartTime: Math.floor(Date.now() / 1000),
+                presaleActive: true,
+                whitelistEnabled: false,
+                progress: 0
+            };
         }
     }
 
@@ -263,6 +342,24 @@ class GenetAiCrypto {
         }
 
         try {
+            // Check if presale is active
+            const presaleData = await this.getPresaleData();
+            if (!presaleData.presaleActive) {
+                this.showError('Presale is not active');
+                return false;
+            }
+
+            // Check contribution limits
+            if (amount < presaleData.minContribution) {
+                this.showError(`Minimum contribution is ${presaleData.minContribution} BNB`);
+                return false;
+            }
+
+            if (amount > presaleData.maxContribution) {
+                this.showError(`Maximum contribution is ${presaleData.maxContribution} BNB`);
+                return false;
+            }
+
             const tx = await this.contracts.presaleWithSigner.contribute({
                 value: ethers.parseEther(amount.toString())
             });
@@ -328,7 +425,8 @@ class GenetAiCrypto {
         if (!presaleData) return;
 
         // Update presale stats
-        this.updateElementValue('totalRaised', `$${(presaleData.totalRaised * 3000).toLocaleString()}`);
+        this.updateElementValue('totalRaised', `${presaleData.totalRaised.toFixed(2)} BNB`);
+        this.updateElementValue('hardCap', `${presaleData.hardCap.toFixed(2)} BNB`);
         this.updateElementValue('presaleProgress', `${presaleData.progress.toFixed(1)}%`);
         this.updateElementValue('totalContributors', presaleData.totalContributors.toLocaleString());
         
@@ -339,18 +437,27 @@ class GenetAiCrypto {
         }
 
         // Update token metrics
-        this.updateElementValue('tokenPriceDisplay', `${presaleData.tokenPrice.toFixed(4)} ETH`);
+        this.updateElementValue('tokenPriceDisplay', `${presaleData.tokenPrice.toFixed(6)} BNB`);
         this.updateElementValue('tokensSold', `${(presaleData.totalRaised / presaleData.tokenPrice).toLocaleString()}`);
         
         // Update user contribution if connected
         if (this.isConnected) {
             const userContribution = await this.getUserContribution();
-            this.updateElementValue('userContribution', `${userContribution.toFixed(4)} ETH`);
+            this.updateElementValue('userContribution', `${userContribution.toFixed(4)} BNB`);
         }
 
         // Update days left
         const daysLeft = Math.max(0, Math.ceil((presaleData.presaleEndTime * 1000 - Date.now()) / (1000 * 60 * 60 * 24)));
         this.updateElementValue('daysLeft', daysLeft);
+
+        // Update presale status
+        const statusElement = document.getElementById('presaleStatus');
+        if (statusElement) {
+            const status = presaleData.presaleActive ? 'Active' : 'Ended';
+            const statusColor = presaleData.presaleActive ? 'var(--success)' : 'var(--accent)';
+            statusElement.textContent = status;
+            statusElement.style.color = statusColor;
+        }
     }
 
     updateElementValue(elementId, value) {
@@ -423,7 +530,7 @@ class GenetAiCrypto {
         modal.innerHTML = `
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>Connect Wallet</h3>
+                    <h3>Connect to BSC Testnet</h3>
                     <button class="close-modal" onclick="this.parentElement.parentElement.parentElement.style.display='none'">×</button>
                 </div>
                 <div class="wallet-options">
@@ -435,6 +542,10 @@ class GenetAiCrypto {
                         <img src="https://avatars.githubusercontent.com/u/37784886" alt="WalletConnect">
                         <span>WalletConnect</span>
                     </div>
+                </div>
+                <div class="network-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Connecting to BSC Testnet (Chain ID: 97)</span>
                 </div>
             </div>
         `;

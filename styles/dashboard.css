@@ -513,3 +513,19 @@
         align-items: center;
     }
 }
+/* Network Info in Wallet Modal */
+.network-info {
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(13, 17, 23, 0.6);
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8b949e;
+    border: 1px solid #30363d;
+}
+
+.network-info i {
+    color: var(--primary);
+    margin-right: 5px;
+}
