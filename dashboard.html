@@ -24,7 +24,7 @@
                     <a href="index.html#how-it-works">How It Works</a>
                     <a href="index.html#features">Features</a>
                     <a href="index.html#pricing">Pricing</a>
-                    <a href="dashboard.html" class="active">Dashboard</a>
+                    <a href="dashboard.html" class="active">Presale</a>
                     <a href="docs.html">Documentation</a>
                 </div>
                 <div class="nav-actions">
@@ -33,7 +33,7 @@
                         <button class="btn btn-primary" id="connectWallet">Connect Wallet</button>
                         <div class="wallet-info">
                             <div class="wallet-address" id="walletAddress" style="display: none;"></div>
-                            <div class="wallet-type" id="walletType" style="display: none;"></div>
+                            <div class="wallet-balance" id="walletBalance" style="display: none;"></div>
                         </div>
                     </div>
                 </div>
@@ -50,19 +50,19 @@
                 
                 <div class="dashboard-key-metrics">
                     <div class="key-metric">
-                        <div class="metric-value" id="totalRaised">Loading...</div>
-                        <div class="metric-label">Total Raised (BNB)</div>
+                        <div class="metric-value" id="totalRaisedUSD">$0</div>
+                        <div class="metric-label">Total Raised (USD)</div>
                     </div>
                     <div class="key-metric">
-                        <div class="metric-value" id="hardCap">Loading...</div>
-                        <div class="metric-label">Hard Cap (BNB)</div>
+                        <div class="metric-value">$1,000,000</div>
+                        <div class="metric-label">Hard Cap (USD)</div>
                     </div>
                     <div class="key-metric">
-                        <div class="metric-value" id="presaleProgress">Loading...</div>
+                        <div class="metric-value" id="presaleProgress">0%</div>
                         <div class="metric-label">Progress</div>
                     </div>
                     <div class="key-metric">
-                        <div class="metric-value" id="daysLeft">Loading...</div>
+                        <div class="metric-value" id="daysLeft">30</div>
                         <div class="metric-label">Days Left</div>
                     </div>
                 </div>
@@ -82,15 +82,15 @@
                     <div class="progress-stats">
                         <div class="progress-stat">
                             <span class="stat-label">Raised (BNB)</span>
-                            <span class="stat-value" id="raisedETH">0</span>
+                            <span class="stat-value" id="raisedBNB">0</span>
                         </div>
                         <div class="progress-stat">
                             <span class="stat-label">Target (BNB)</span>
-                            <span class="stat-value" id="targetETH">0</span>
+                            <span class="stat-value" id="targetBNB">0</span>
                         </div>
                         <div class="progress-stat">
                             <span class="stat-label">Remaining (BNB)</span>
-                            <span class="stat-value" id="remainingETH">0</span>
+                            <span class="stat-value" id="remainingBNB">0</span>
                         </div>
                     </div>
                 </div>
@@ -99,7 +99,7 @@
                 <div class="dashboard-card contribution-stats">
                     <div class="card-header">
                         <h3>Live Contribution Statistics</h3>
-                        <div class="last-updated" id="lastUpdated"></div>
+                        <div class="last-updated" id="lastUpdated">Updating...</div>
                     </div>
                     <div class="contribution-grid">
                         <div class="contribution-metric">
@@ -122,11 +122,11 @@
                         </div>
                         <div class="contribution-metric">
                             <div class="metric-icon">
-                                <i class="fas fa-chart-bar"></i>
+                                <i class="fas fa-coins"></i>
                             </div>
                             <div class="metric-content">
-                                <div class="metric-value" id="tokenPrice">0 BNB</div>
-                                <div class="metric-label">Token Price</div>
+                                <div class="metric-value" id="tokensSold">0</div>
+                                <div class="metric-label">Tokens Sold</div>
                             </div>
                         </div>
                     </div>
@@ -135,38 +135,41 @@
                 <!-- Live Crypto Contribution Section -->
                 <div class="dashboard-card crypto-payment">
                     <div class="card-header">
-                        <h3>Live Contribution</h3>
-                        <div class="wallet-connect">
-                            <div class="wallet-status disconnected" id="walletStatusDashboard">Not Connected</div>
-                            <button class="btn btn-primary" id="connectWalletDashboard">Connect Wallet</button>
-                            <div class="wallet-info">
-                                <div class="wallet-address" id="walletAddressDashboard" style="display: none;"></div>
-                                <div class="wallet-type" id="walletTypeDashboard" style="display: none;"></div>
-                            </div>
+                        <h3>Contribute to Presale</h3>
+                        <div class="connection-status">
+                            <span class="status-dot" id="connectionStatus"></span>
+                            <span id="networkStatus">BSC Testnet</span>
                         </div>
                     </div>
 
-                    <!-- Live Contract Limits -->
+                    <!-- Wallet Connection -->
+                    <div class="wallet-section">
+                        <div class="wallet-info-compact" id="walletInfoCompact" style="display: none;">
+                            <div class="wallet-address-compact" id="walletAddressCompact"></div>
+                            <div class="wallet-balance-compact" id="walletBalanceCompact"></div>
+                        </div>
+                        <button class="btn btn-outline btn-sm" id="connectWalletBtn" style="width: 100%; margin-bottom: 1rem;">
+                            Connect Wallet
+                        </button>
+                    </div>
+
+                    <!-- Contribution Limits -->
                     <div class="contribution-limits">
                         <div class="limit-item">
-                            <div class="limit-value" id="minContribution">Loading...</div>
+                            <div class="limit-value" id="minContribution">0.01 BNB</div>
                             <div class="limit-label">Min Contribution</div>
                         </div>
                         <div class="limit-item">
-                            <div class="limit-value" id="maxContribution">Loading...</div>
+                            <div class="limit-value" id="maxContribution">10 BNB</div>
                             <div class="limit-label">Max Contribution</div>
                         </div>
                     </div>
 
-                    <!-- Live User Stats -->
+                    <!-- User Stats -->
                     <div class="user-stats" id="userStats" style="display: none;">
                         <div class="user-stat-item">
                             <span>Your Contribution:</span>
                             <span id="userContribution">0 BNB</span>
-                        </div>
-                        <div class="user-stat-item">
-                            <span>Your Balance:</span>
-                            <span id="userBalance">0 BNB</span>
                         </div>
                         <div class="user-stat-item">
                             <span>Your Tokens:</span>
@@ -174,18 +177,12 @@
                         </div>
                     </div>
 
-                    <div class="payment-options">
-                        <div class="payment-option selected" onclick="selectPayment('bnb')">
-                            <div class="payment-icon">
-                                <i class="fab fa-ethereum"></i>
-                            </div>
-                            <h4>BNB</h4>
-                            <p>Binance Smart Chain</p>
-                        </div>
-                    </div>
-
+                    <!-- Contribution Form -->
                     <div class="contribution-form">
-                        <input type="number" class="amount-input" id="contributionAmount" placeholder="Enter BNB amount" step="0.001" min="0.01">
+                        <div class="input-group">
+                            <input type="number" class="amount-input" id="contributionAmount" placeholder="Enter BNB amount" step="0.001" min="0.01" max="10">
+                            <span class="input-suffix">BNB</span>
+                        </div>
                         
                         <div class="amount-buttons">
                             <button class="amount-btn" onclick="setAmount(0.1)">0.1 BNB</button>
@@ -194,21 +191,24 @@
                             <button class="amount-btn" onclick="setAmount(5)">5 BNB</button>
                         </div>
 
-                        <div style="margin: 15px 0; text-align: center; color: #8b949e;">
-                            Token Price: <span id="tokenPriceDisplay">Loading...</span>
+                        <div class="token-calculation">
+                            <div class="calculation-row">
+                                <span>Token Price:</span>
+                                <span id="tokenPriceDisplay">0.15 BNB</span>
+                            </div>
+                            <div class="calculation-row">
+                                <span>You will receive:</span>
+                                <span id="tokenAmount">0</span> $GENE
+                            </div>
                         </div>
 
-                        <button class="btn btn-primary" onclick="contribute()" style="width: 100%;" id="contributeBtn">
-                            Contribute to Presale
+                        <button class="btn btn-primary" onclick="contribute()" style="width: 100%;" id="contributeBtn" disabled>
+                            Connect Wallet to Contribute
                         </button>
-                        
-                        <div style="margin-top: 15px; text-align: center; color: #8b949e; font-size: 0.9rem;">
-                            You will receive: <span id="tokenAmount">0</span> $GENE tokens
-                        </div>
 
                         <!-- Claim Section -->
                         <div class="claim-section" id="claimSection" style="display: none;">
-                            <button class="btn btn-outline" onclick="claimTokens()" style="width: 100%;">
+                            <button class="btn btn-success" onclick="claimTokens()" style="width: 100%;">
                                 Claim Your Tokens
                             </button>
                         </div>
@@ -223,19 +223,19 @@
                     <div class="token-stats">
                         <div class="token-stat">
                             <span class="stat-label">Token Price</span>
-                            <span class="stat-value" id="liveTokenPrice">Loading...</span>
+                            <span class="stat-value" id="liveTokenPrice">0.15 BNB</span>
                         </div>
                         <div class="token-stat">
                             <span class="stat-label">Tokens Sold</span>
-                            <span class="stat-value" id="tokensSold">Loading...</span>
+                            <span class="stat-value" id="liveTokensSold">0</span>
                         </div>
                         <div class="token-stat">
                             <span class="stat-label">Total Supply</span>
-                            <span class="stat-value">100M</span>
+                            <span class="stat-value">100,000,000</span>
                         </div>
                         <div class="token-stat">
-                            <span class="stat-label">Presale Status</span>
-                            <span class="stat-value" id="presaleStatus">Loading...</span>
+                            <span class="stat-label">Presale Allocation</span>
+                            <span class="stat-value">40%</span>
                         </div>
                     </div>
                 </div>
@@ -255,14 +255,14 @@
                             <span class="contract-value">BSC Testnet</span>
                         </div>
                         <div class="contract-item">
+                            <span class="contract-label">Token Symbol:</span>
+                            <span class="contract-value">$GENE</span>
+                        </div>
+                        <div class="contract-item">
                             <span class="contract-label">Block Explorer:</span>
                             <span class="contract-value">
                                 <a href="https://testnet.bscscan.com/address/0x783Ab31e81A0FA50F3D6a85bF9F2A7f8DDDdC75E" target="_blank" style="color: var(--primary);">View on BscScan</a>
                             </span>
-                        </div>
-                        <div class="contract-item">
-                            <span class="contract-label">Last Block Update:</span>
-                            <span class="contract-value" id="lastBlockUpdate">Loading...</span>
                         </div>
                     </div>
                 </div>
@@ -270,11 +270,11 @@
                 <!-- Transaction History -->
                 <div class="dashboard-card transaction-history">
                     <div class="card-header">
-                        <h3>Recent Blockchain Activity</h3>
+                        <h3>Recent Contributions</h3>
                         <button class="btn btn-outline btn-sm" onclick="refreshTransactions()">Refresh</button>
                     </div>
                     <div class="transactions-list" id="transactionsList">
-                        <div class="loading-transactions">Loading live transactions from BSC Testnet...</div>
+                        <div class="loading-transactions">Loading live transactions...</div>
                     </div>
                 </div>
             </div>
@@ -334,8 +334,7 @@
         </div>
     </footer>
 
-    <script src="./scripts/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script src="./scripts/dashboard.js"></script>
-    <script src="./scripts/crypto.js"></script>
 </body>
 </html>

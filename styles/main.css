@@ -703,3 +703,152 @@ footer {
     border-top: 1px solid #30363d;
 }
 }
+/* Presale Stats Styles */
+.presale-stats-hero {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.presale-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.presale-card:hover {
+    transform: translateY(-5px);
+}
+
+.presale-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #3b82f6;
+    margin-bottom: 0.5rem;
+}
+
+.presale-label {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Progress Bar */
+.progress-container {
+    margin: 2rem 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    border-radius: 6px;
+    transition: width 0.5s ease, background-color 0.5s ease;
+    width: 0%;
+}
+
+.progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Token Metrics */
+.token-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.token-metric {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.token-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #10b981;
+    margin-bottom: 0.25rem;
+}
+
+.token-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Presale Details Section */
+.presale-details {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    margin: 3rem auto;
+    padding: 3rem 0;
+}
+
+.presale-info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.presale-info-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.presale-info-card:hover {
+    transform: translateY(-5px);
+}
+
+.presale-info-card i {
+    font-size: 2rem;
+    color: #3b82f6;
+    margin-bottom: 1rem;
+}
+
+.presale-info-card h3 {
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.presale-info-card p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .presale-stats-hero,
+    .token-metrics,
+    .presale-info-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .presale-stats-hero,
+    .token-metrics,
+    .presale-info-grid {
+        grid-template-columns: 1fr;
+    }
+}

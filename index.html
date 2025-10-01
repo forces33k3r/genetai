@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GenetAi - Recode Your DNA. Reclaim Your Youth.</title>
-    <!-- Fix CSS path -->
     <link rel="stylesheet" href="./styles/main.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -35,48 +34,70 @@
         </div>
     </header>
 
-    <!-- Hero Section with Presale Stats -->
+    <!-- Hero Section with Live Presale Stats -->
     <section class="hero">
         <div class="container">
             <div class="hero-content">
                 <h1>Recode your DNA. <span>Reclaim your youth.</span></h1>
-                <p>Upload your raw DNA data to receive a detailed report on health risks, traits, and more. Powered by blockchain technology for secure, private genetic analysis.</p>
+                <p>Join our token presale and be part of the genetic revolution. Powered by blockchain technology for secure, private genetic analysis.</p>
+                
+                <!-- Live Presale Stats -->
+                <div class="presale-stats-hero">
+                    <div class="presale-card">
+                        <div class="presale-value" id="totalRaised">Loading...</div>
+                        <div class="presale-label">Total Raised</div>
+                    </div>
+                    <div class="presale-card">
+                        <div class="presale-value">$1,000,000</div>
+                        <div class="presale-label">Presale Goal</div>
+                    </div>
+                    <div class="presale-card">
+                        <div class="presale-value" id="presaleProgress">0%</div>
+                        <div class="presale-label">Progress</div>
+                    </div>
+                    <div class="presale-card">
+                        <div class="presale-value" id="daysLeft">30</div>
+                        <div class="presale-label">Days Left</div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>$0</span>
+                        <span id="currentRaised">$0</span>
+                        <span>$1M</span>
+                    </div>
+                </div>
+
+                <!-- Token Metrics -->
+                <div class="token-metrics">
+                    <div class="token-metric">
+                        <div class="token-value">$GENE</div>
+                        <div class="token-label">Token Symbol</div>
+                    </div>
+                    <div class="token-metric">
+                        <div class="token-value" id="tokenPrice">0.15 BNB</div>
+                        <div class="token-label">Token Price</div>
+                    </div>
+                    <div class="token-metric">
+                        <div class="token-value" id="contributors">0</div>
+                        <div class="token-label">Contributors</div>
+                    </div>
+                    <div class="token-metric">
+                        <div class="token-value" id="tokensSold">0</div>
+                        <div class="token-label">Tokens Sold</div>
+                    </div>
+                </div>
+
                 <div class="hero-btns">
-                    <button class="btn btn-primary" id="uploadBtn">Upload DNA Data</button>
+                    <button class="btn btn-primary" id="buyTokensBtn">Buy Tokens Now</button>
                     <button class="btn btn-outline" id="learnMoreBtn">Learn More</button>
                 </div>
-                
-                <!-- In the hero section presale stats -->
-<div class="presale-stats-hero">
-    <div class="presale-card">
-        <div class="presale-value" id="totalRaised">$2.45M</div>
-        <div class="presale-label">Total Raised</div>
-    </div>
-    <div class="presale-card">
-        <div class="presale-value">$10M</div>
-        <div class="presale-label">Presale Goal</div>
-    </div>
-    <div class="presale-card">
-        <div class="presale-value" id="presaleProgress">24.5%</div>
-        <div class="presale-label">Progress</div>
-    </div>
-    <div class="presale-card">
-        <div class="presale-value" id="totalContributors">42</div>
-        <div class="presale-label">Days Left</div>
-    </div>
-</div>
-
-<!-- In token metrics -->
-<div class="token-metrics">
-    <div class="token-metric">
-        <div class="token-value">$GENE</div>
-        <div class="token-label">Token Symbol</div>
-        </div>
-         <div class="token-metric">
-        <div class="token-value" id="tokenPriceDisplay">0.15 BNB</div>
-        <div class="token-label">Token Price</div>
-         </div>
-        </div>
+            </div>
         </div>
     </section>
 
@@ -139,8 +160,8 @@
                     <div class="feature-icon">
                         <i class="fas fa-coins"></i>
                     </div>
-                    <h3>Crypto Payments</h3>
-                    <p>Pay with major cryptocurrencies for fast, secure, and anonymous transactions.</p>
+                    <h3>Token Rewards</h3>
+                    <p>Earn $GENE tokens for contributing to research and participating in the ecosystem.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
@@ -167,58 +188,39 @@
         </div>
     </section>
 
-    <!-- Pricing -->
-    <!-- Pricing -->
-<section class="section" id="pricing">
-    <div class="container">
-        <div class="section-title">
-            <h2>Pricing Plans</h2>
-            <p>Choose the plan that works best for your genetic exploration journey</p>
-        </div>
-        <div class="pricing-cards">
-            <div class="pricing-card">
-                <h3>Basic</h3>
-                <div class="price">0.05 BNB </div>
-                <ul class="pricing-features">
-                    <li>Health Risk Analysis</li>
-                    <li>Ancestry Report</li>
-                    <li>Basic Trait Analysis</li>
-                    <li>PDF Report Download</li>
-                    <li>Email Support</li>
-                </ul>
-                <button class="btn btn-outline" onclick="selectPlan('basic')">Get Started</button>
+    <!-- Presale Details Section -->
+    <section class="section presale-details">
+        <div class="container">
+            <div class="section-title">
+                <h2>Token Presale Details</h2>
+                <p>Join our presale and get early access to $GENE tokens</p>
             </div>
-            <div class="pricing-card featured">
-                <h3>Pro</h3>
-                <div class="price">0.1 BNB </div>
-                <ul class="pricing-features">
-                    <li>All Basic Features</li>
-                    <li>Advanced Health Insights</li>
-                    <li>Nutrition & Fitness Plan</li>
-                    <li>Drug Response Analysis</li>
-                    <li>Priority Support</li>
-                    <li>Data Export Options</li>
-                </ul>
-                <button class="btn btn-primary" onclick="selectPlan('pro')">Get Started</button>
-            </div>
-            <div class="pricing-card">
-                <h3>Enterprise</h3>
-                <div class="price">Custom </div>
-                <ul class="pricing-features">
-                    <li>All Pro Features</li>
-                    <li>Family Package</li>
-                    <li>Research Integration</li>
-                    <li>API Access</li>
-                    <li>Dedicated Account Manager</li>
-                    <li>Custom Analysis</li>
-                </ul>
-                <button class="btn btn-outline" onclick="selectPlan('enterprise')">Contact Sales</button>
+            <div class="presale-info-grid">
+                <div class="presale-info-card">
+                    <i class="fas fa-calendar"></i>
+                    <h3>Presale Period</h3>
+                    <p id="presalePeriod">30 Days</p>
+                </div>
+                <div class="presale-info-card">
+                    <i class="fas fa-bullseye"></i>
+                    <h3>Soft Cap</h3>
+                    <p>$500,000</p>
+                </div>
+                <div class="presale-info-card">
+                    <i class="fas fa-flag-checkered"></i>
+                    <h3>Hard Cap</h3>
+                    <p>$1,000,000</p>
+                </div>
+                <div class="presale-info-card">
+                    <i class="fas fa-percentage"></i>
+                    <h3>Token Allocation</h3>
+                    <p>40% Presale</p>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-    <!-- User Stats Section (at bottom) -->
+    <!-- User Stats Section -->
     <section class="user-stats-section">
         <div class="container">
             <div class="section-title">
@@ -320,6 +322,7 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
     <script src="scripts/main.js"></script>
 </body>
 </html>
