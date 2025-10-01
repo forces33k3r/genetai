@@ -24,13 +24,25 @@
                     <a href="index.html#how-it-works">How It Works</a>
                     <a href="index.html#features">Features</a>
                     <a href="index.html#pricing">Pricing</a>
-                    <a href="dashboard.html" class="active">Presale</a>
+                    <a href="dashboard.html" class="active">Dashboard</a>
                     <a href="docs.html">Documentation</a>
                 </div>
                 <div class="nav-actions">
                     <div class="wallet-connect">
                         <div class="wallet-status disconnected" id="walletStatus">Not Connected</div>
-                        <button class="btn btn-primary" id="connectWallet">Connect Wallet</button>
+                        <div class="wallet-dropdown">
+                            <button class="btn btn-primary" id="connectWalletBtn">Connect Wallet</button>
+                            <div class="wallet-dropdown-content" id="walletDropdown">
+                                <button class="wallet-option" onclick="connectMetaMask()">
+                                    <i class="fab fa-metamask"></i>
+                                    MetaMask
+                                </button>
+                                <button class="wallet-option" onclick="connectWalletConnect()">
+                                    <i class="fas fa-wallet"></i>
+                                    WalletConnect
+                                </button>
+                            </div>
+                        </div>
                         <div class="wallet-info">
                             <div class="wallet-address" id="walletAddress" style="display: none;"></div>
                             <div class="wallet-balance" id="walletBalance" style="display: none;"></div>
@@ -147,10 +159,20 @@
                         <div class="wallet-info-compact" id="walletInfoCompact" style="display: none;">
                             <div class="wallet-address-compact" id="walletAddressCompact"></div>
                             <div class="wallet-balance-compact" id="walletBalanceCompact"></div>
+                            <button class="btn btn-outline btn-sm" onclick="disconnectWallet()" style="margin-top: 0.5rem;">
+                                Disconnect
+                            </button>
                         </div>
-                        <button class="btn btn-outline btn-sm" id="connectWalletBtn" style="width: 100%; margin-bottom: 1rem;">
-                            Connect Wallet
-                        </button>
+                        <div class="wallet-options">
+                            <button class="wallet-option-btn" onclick="connectMetaMask()">
+                                <i class="fab fa-metamask"></i>
+                                MetaMask
+                            </button>
+                            <button class="wallet-option-btn" onclick="connectWalletConnect()">
+                                <i class="fas fa-wallet"></i>
+                                WalletConnect
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Contribution Limits -->
@@ -194,7 +216,7 @@
                         <div class="token-calculation">
                             <div class="calculation-row">
                                 <span>Token Price:</span>
-                                <span id="tokenPriceDisplay">0.15 BNB</span>
+                                <span id="tokenPriceDisplay">0.15 USD</span>
                             </div>
                             <div class="calculation-row">
                                 <span>You will receive:</span>
@@ -281,6 +303,22 @@
         </div>
     </div>
 
+    <!-- WalletConnect Modal -->
+    <div id="walletConnectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Connect Wallet</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="walletConnectQR" style="text-align: center;"></div>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <p>Scan QR code with your wallet app</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <div class="container">
             <div class="footer-content">
@@ -335,6 +373,8 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
+    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://unpkg.com/qrcode@1.5.0/build/qrcode.min.js"></script>
     <script src="./scripts/dashboard.js"></script>
 </body>
 </html>
