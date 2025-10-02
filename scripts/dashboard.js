@@ -1,574 +1,448 @@
-// Dashboard Configuration
-const CONTRACT_ADDRESS = '0x783Ab31e81A0FA50F3D6a85bF9F2A7f8DDDdC75E';
-const BSC_RPC_URL = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
-const PRESALE_GOAL_USD = 1000000;
-const TOKEN_PRICE_BNB = 0.15;
-const BNB_PRICE_USD = 300;
+// dashboard.js - Complete implementation for GenetAi Presale Dashboard
+// Place this in ./scripts/dashboard.js
+// IMPORTANT: Update your HTML to use WalletConnect v2:
+// Replace <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+// With: <script src="https://unpkg.com/@walletconnect/ethereum-provider@2.14.0/dist/umd/index.min.js"></script>
+// Also, get a free Project ID from https://cloud.walletconnect.com and replace 'YOUR_PROJECT_ID' below.
 
-// Contract ABI
+// Configuration
+const CONTRACT_ADDRESS = '0x783Ab31e81A0FA50F3D6a85bF9F2A7f8DDDdC75E';
+const CHAIN_ID = 97; // BSC Testnet
+const BSC_RPC = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
+const TOKEN_PRICE_BNB = 0.15; // Hardcoded for now; update via contract if available
+const HARD_CAP_BNB = 6666.67; // Approx $1M at $150/BNB; adjust as needed
+const TOTAL_SUPPLY = 100000000;
+const PRESALE_ALLOCATION = 0.4;
+
+// Placeholder ABI for a standard presale contract (since yours isn't verified on BscScan)
+// Customize this with your actual ABI once verified/deployed properly
 const CONTRACT_ABI = [
-    {
-        "inputs": [],
-        "name": "totalRaised",
-        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "totalContributors",
-        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "tokensSold",
-        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "presaleEndTime",
-        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "minContribution",
-        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "maxContribution",
-        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [{"internalType": "address", "name": "", "type": "address"}],
-        "name": "contributions",
-        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "contribute",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "claimTokens",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    }
+  // View functions
+  {
+    "inputs": [],
+    "name": "totalRaised",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "address", "name": "user", "type": "address"}],
+    "name": "userContribution",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "address", "name": "user", "type": "address"}],
+    "name": "userTokens",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalContributors",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "tokensSold",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "presaleEnded",
+    "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  // Transaction functions
+  {
+    "inputs": [],
+    "name": "contribute",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "claimTokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  // Events
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": false, "internalType": "address", "name": "contributor", "type": "address"},
+      {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}
+    ],
+    "name": "Contribution",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": false, "internalType": "address", "name": "claimer", "type": "address"},
+      {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"}
+    ],
+    "name": "TokensClaimed",
+    "type": "event"
+  }
 ];
 
-class DashboardManager {
-    constructor() {
-        this.web3 = null;
-        this.contract = null;
-        this.userAddress = null;
-        this.isConnected = false;
-        this.updateInterval = null;
-        this.init();
-    }
+let web3;
+let contract;
+let userAccount;
+let isConnected = false;
 
-    async init() {
-        try {
-            // Initialize Web3 for reading contract data
-            this.web3 = new Web3(BSC_RPC_URL);
-            this.contract = new this.web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-            
-            // Set up event listeners
-            this.setupEventListeners();
-            
-            // Check for existing MetaMask connection
-            await this.checkExistingConnection();
-            
-            // Load initial data
-            await this.updateDashboard();
-            
-            // Set up periodic updates
-            this.updateInterval = setInterval(() => this.updateDashboard(), 10000);
-            
-        } catch (error) {
-            console.error('Error initializing dashboard:', error);
-            this.showFallbackData();
-        }
-    }
+// Initialize Web3 on load
+async function init() {
+  if (window.ethereum) {
+    web3 = new Web3(window.ethereum);
+  } else {
+    web3 = new Web3(BSC_RPC);
+  }
+  contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+  await updateLiveData();
+  setInterval(updateLiveData, 10000); // Poll every 10s
+  updateDaysLeft(); // Static for now
+  updateTokenCalculation(); // Initial calc
+  document.getElementById('connectWalletBtn').addEventListener('click', toggleWalletDropdown);
+  document.getElementById('contributionAmount').addEventListener('input', updateTokenCalculation);
+}
 
-    setupEventListeners() {
-        // Wallet dropdown
-        document.getElementById('connectWalletBtn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.toggleWalletDropdown();
+// Wallet Functions
+async function connectMetaMask() {
+  if (typeof window.ethereum === 'undefined') {
+    alert('MetaMask not detected. Install it from https://metamask.io');
+    return;
+  }
+
+  try {
+    // Request accounts
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    userAccount = accounts[0];
+
+    // Switch to BSC Testnet
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x61' }] // 97 in hex
+      });
+    } catch (switchError) {
+      if (switchError.code === 4902) { // Chain not added
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: '0x61',
+            chainName: 'BSC Testnet',
+            rpcUrls: [BSC_RPC],
+            nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+            blockExplorerUrls: ['https://testnet.bscscan.com']
+          }]
         });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', () => {
-            this.closeWalletDropdown();
-        });
-
-        // Contribution amount input
-        document.getElementById('contributionAmount').addEventListener('input', (e) => this.calculateTokens(e.target.value));
+      } else {
+        throw switchError;
+      }
     }
 
-    toggleWalletDropdown() {
-        const dropdown = document.getElementById('walletDropdown');
-        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    // Verify chain ID
+    const chainId = await web3.eth.getChainId();
+    if (chainId !== CHAIN_ID) {
+      alert('Please switch to BSC Testnet.');
+      return;
     }
 
-    closeWalletDropdown() {
-        document.getElementById('walletDropdown').style.display = 'none';
+    await handleConnection();
+  } catch (error) {
+    console.error('MetaMask connection failed:', error);
+    if (error.code === 4001) {
+      alert('Connection rejected by user.');
+    } else {
+      alert('Connection failed. Ensure MetaMask is unlocked.');
     }
-
-    async checkExistingConnection() {
-        if (typeof window.ethereum !== 'undefined') {
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-                if (accounts.length > 0) {
-                    await this.connectMetaMask();
-                }
-            } catch (error) {
-                console.log('No existing MetaMask connection');
-            }
-        }
-    }
-
-    async connectMetaMask() {
-        try {
-            if (typeof window.ethereum === 'undefined') {
-                alert('MetaMask is not installed. Please install MetaMask to continue.');
-                return;
-            }
-
-            // Request account access
-            const accounts = await window.ethereum.request({ 
-                method: 'eth_requestAccounts' 
-            });
-            
-            // Switch to BSC Testnet if needed
-            await this.switchToBSCNetwork();
-            
-            this.web3 = new Web3(window.ethereum);
-            this.userAddress = accounts[0];
-            this.isConnected = true;
-            
-            this.updateWalletDisplay();
-            await this.updateUserStats();
-            await this.updateUserBalance();
-            
-            // Set up event listeners for MetaMask
-            window.ethereum.on('accountsChanged', (accounts) => {
-                this.handleAccountsChanged(accounts);
-            });
-            
-            window.ethereum.on('chainChanged', (chainId) => {
-                window.location.reload();
-            });
-
-            this.closeWalletDropdown();
-            
-        } catch (error) {
-            console.error('Error connecting MetaMask:', error);
-            if (error.code === 4001) {
-                alert('Please connect your MetaMask wallet to continue.');
-            } else {
-                alert('Error connecting MetaMask. Please try again.');
-            }
-        }
-    }
-
-    async switchToBSCNetwork() {
-        try {
-            // BSC Testnet chain ID
-            const chainId = '0x61'; // 97 in decimal
-            
-            await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: chainId }],
-            });
-        } catch (switchError) {
-            // This error code indicates that the chain has not been added to MetaMask
-            if (switchError.code === 4902) {
-                try {
-                    await window.ethereum.request({
-                        method: 'wallet_addEthereumChain',
-                        params: [
-                            {
-                                chainId: '0x61',
-                                chainName: 'Binance Smart Chain Testnet',
-                                nativeCurrency: {
-                                    name: 'BNB',
-                                    symbol: 'BNB',
-                                    decimals: 18,
-                                },
-                                rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
-                                blockExplorerUrls: ['https://testnet.bscscan.com/'],
-                            },
-                        ],
-                    });
-                } catch (addError) {
-                    console.error('Error adding BSC Testnet:', addError);
-                }
-            } else {
-                console.error('Error switching to BSC Testnet:', switchError);
-            }
-        }
-    }
-
-    async connectWalletConnect() {
-        alert('WalletConnect integration is being improved. Please use MetaMask for now.');
-        this.closeWalletDropdown();
-        return;
-        
-        // Simplified WalletConnect - will be implemented in future update
-        // For now, we'll just show a message and close the dropdown
-    }
-
-    handleAccountsChanged(accounts) {
-        if (accounts.length === 0) {
-            this.disconnectWallet();
-        } else {
-            this.userAddress = accounts[0];
-            this.updateWalletDisplay();
-            this.updateUserStats();
-            this.updateUserBalance();
-        }
-    }
-
-    async disconnectWallet() {
-        this.web3 = new Web3(BSC_RPC_URL);
-        this.userAddress = null;
-        this.isConnected = false;
-        
-        this.updateWalletDisplay();
-        this.contract = new this.web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-    }
-
-    updateWalletDisplay() {
-        const walletStatus = document.getElementById('walletStatus');
-        const walletAddress = document.getElementById('walletAddress');
-        const walletBalance = document.getElementById('walletBalance');
-        const connectWalletBtn = document.getElementById('connectWalletBtn');
-        const contributeBtn = document.getElementById('contributeBtn');
-        const walletInfoCompact = document.getElementById('walletInfoCompact');
-
-        if (this.isConnected && this.userAddress) {
-            const shortAddress = `${this.userAddress.slice(0, 6)}...${this.userAddress.slice(-4)}`;
-            
-            walletStatus.textContent = 'Connected';
-            walletStatus.className = 'wallet-status connected';
-            walletAddress.textContent = shortAddress;
-            walletAddress.style.display = 'block';
-            
-            connectWalletBtn.textContent = 'Connected';
-            connectWalletBtn.disabled = true;
-            contributeBtn.disabled = false;
-            contributeBtn.textContent = 'Contribute to Presale';
-            
-            walletInfoCompact.style.display = 'block';
-            document.getElementById('walletAddressCompact').textContent = shortAddress;
-            
-        } else {
-            walletStatus.textContent = 'Not Connected';
-            walletStatus.className = 'wallet-status disconnected';
-            walletAddress.style.display = 'none';
-            walletBalance.style.display = 'none';
-            
-            connectWalletBtn.textContent = 'Connect Wallet';
-            connectWalletBtn.disabled = false;
-            contributeBtn.disabled = true;
-            contributeBtn.textContent = 'Connect Wallet to Contribute';
-            
-            walletInfoCompact.style.display = 'none';
-            document.getElementById('userStats').style.display = 'none';
-        }
-    }
-
-    async updateUserBalance() {
-        if (!this.isConnected || !this.userAddress || !this.web3) return;
-
-        try {
-            const balance = await this.web3.eth.getBalance(this.userAddress);
-            const balanceBNB = this.web3.utils.fromWei(balance, 'ether');
-            
-            document.getElementById('walletBalance').textContent = `${parseFloat(balanceBNB).toFixed(4)} BNB`;
-            document.getElementById('walletBalance').style.display = 'block';
-            document.getElementById('walletBalanceCompact').textContent = `${parseFloat(balanceBNB).toFixed(4)} BNB`;
-            
-        } catch (error) {
-            console.error('Error updating user balance:', error);
-        }
-    }
-
-    async updateUserStats() {
-        if (!this.isConnected || !this.userAddress) return;
-
-        try {
-            const userContribution = await this.contract.methods.contributions(this.userAddress).call();
-            const userContributionBNB = this.web3.utils.fromWei(userContribution, 'ether');
-            const userTokens = (userContributionBNB / TOKEN_PRICE_BNB).toFixed(2);
-
-            document.getElementById('userContribution').textContent = `${parseFloat(userContributionBNB).toFixed(4)} BNB`;
-            document.getElementById('userTokens').textContent = `${parseInt(userTokens).toLocaleString()} $GENE`;
-            document.getElementById('userStats').style.display = 'block';
-
-            if (parseFloat(userContributionBNB) > 0) {
-                document.getElementById('claimSection').style.display = 'block';
-            }
-
-        } catch (error) {
-            console.error('Error updating user stats:', error);
-        }
-    }
-
-    async updateDashboard() {
-        try {
-            const [totalRaised, totalContributors, tokensSold, presaleEndTime, minContribution, maxContribution] = await Promise.all([
-                this.contract.methods.totalRaised().call(),
-                this.contract.methods.totalContributors().call(),
-                this.contract.methods.tokensSold().call(),
-                this.contract.methods.presaleEndTime().call(),
-                this.contract.methods.minContribution().call(),
-                this.contract.methods.maxContribution().call()
-            ]);
-
-            this.updateDashboardUI(totalRaised, totalContributors, tokensSold, presaleEndTime, minContribution, maxContribution);
-            this.updateLastUpdated();
-
-        } catch (error) {
-            console.error('Error updating dashboard:', error);
-        }
-    }
-
-    updateDashboardUI(totalRaised, totalContributors, tokensSold, presaleEndTime, minContribution, maxContribution) {
-        const raisedBNB = this.web3.utils.fromWei(totalRaised, 'ether');
-        const raisedUSD = (raisedBNB * BNB_PRICE_USD).toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        });
-
-        const progress = ((raisedBNB * BNB_PRICE_USD) / PRESALE_GOAL_USD) * 100;
-        const daysLeft = this.calculateDaysLeft(presaleEndTime);
-        const targetBNB = (PRESALE_GOAL_USD / BNB_PRICE_USD).toFixed(2);
-        const remainingBNB = (targetBNB - raisedBNB).toFixed(2);
-        const averageContribution = totalContributors > 0 ? (raisedBNB / totalContributors).toFixed(4) : 0;
-
-        // Update key metrics
-        document.getElementById('totalRaisedUSD').textContent = raisedUSD;
-        document.getElementById('presaleProgress').textContent = `${progress.toFixed(1)}%`;
-        document.getElementById('daysLeft').textContent = daysLeft;
-
-        // Update progress section
-        document.getElementById('progressPercent').textContent = `${progress.toFixed(1)}%`;
-        document.getElementById('progressBarFill').style.width = `${Math.min(progress, 100)}%`;
-        document.getElementById('raisedBNB').textContent = `${parseFloat(raisedBNB).toFixed(2)} BNB`;
-        document.getElementById('targetBNB').textContent = `${targetBNB} BNB`;
-        document.getElementById('remainingBNB').textContent = `${Math.max(0, remainingBNB)} BNB`;
-
-        // Update contribution stats
-        document.getElementById('totalContributors').textContent = parseInt(totalContributors).toLocaleString();
-        document.getElementById('averageContribution').textContent = `${averageContribution} BNB`;
-        document.getElementById('tokensSold').textContent = parseInt(tokensSold).toLocaleString();
-
-        // Update token metrics
-        document.getElementById('liveTokensSold').textContent = parseInt(tokensSold).toLocaleString();
-
-        // Update contribution limits
-        document.getElementById('minContribution').textContent = `${this.web3.utils.fromWei(minContribution, 'ether')} BNB`;
-        document.getElementById('maxContribution').textContent = `${this.web3.utils.fromWei(maxContribution, 'ether')} BNB`;
-
-        // Update progress bar color
-        const progressFill = document.getElementById('progressBarFill');
-        if (progress >= 100) {
-            progressFill.style.background = 'linear-gradient(90deg, #10b981, #059669)';
-        } else if (progress >= 50) {
-            progressFill.style.background = 'linear-gradient(90deg, #f59e0b, #d97706)';
-        } else {
-            progressFill.style.background = 'linear-gradient(90deg, #3b82f6, #1d4ed8)';
-        }
-    }
-
-    calculateTokens(amount) {
-        if (!amount || amount <= 0) {
-            document.getElementById('tokenAmount').textContent = '0';
-            return;
-        }
-
-        const tokens = amount / TOKEN_PRICE_BNB;
-        document.getElementById('tokenAmount').textContent = tokens.toLocaleString('en-US', {
-            maximumFractionDigits: 0
-        });
-    }
-
-    calculateDaysLeft(endTime) {
-        const now = Math.floor(Date.now() / 1000);
-        const timeLeft = endTime - now;
-        return Math.max(0, Math.ceil(timeLeft / (24 * 60 * 60)));
-    }
-
-    updateLastUpdated() {
-        const now = new Date();
-        document.getElementById('lastUpdated').textContent = `Last updated: ${now.toLocaleTimeString()}`;
-    }
-
-    async contribute() {
-        if (!this.isConnected || !this.userAddress || !this.web3) {
-            alert('Please connect your wallet first.');
-            return;
-        }
-
-        const amount = document.getElementById('contributionAmount').value;
-        if (!amount || amount <= 0) {
-            alert('Please enter a valid amount.');
-            return;
-        }
-
-        const amountWei = this.web3.utils.toWei(amount, 'ether');
-
-        try {
-            document.getElementById('contributeBtn').disabled = true;
-            document.getElementById('contributeBtn').textContent = 'Processing...';
-
-            const contract = new this.web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-            const result = await contract.methods.contribute().send({
-                from: this.userAddress,
-                value: amountWei,
-                gas: 300000
-            });
-
-            alert('Contribution successful! Thank you for participating in the presale.');
-            
-            await this.updateDashboard();
-            await this.updateUserStats();
-            await this.updateUserBalance();
-
-        } catch (error) {
-            console.error('Error contributing:', error);
-            if (error.code === 4001) {
-                alert('Transaction was rejected by your wallet.');
-            } else {
-                alert('Contribution failed. Please try again.');
-            }
-        } finally {
-            document.getElementById('contributeBtn').disabled = false;
-            document.getElementById('contributeBtn').textContent = 'Contribute to Presale';
-        }
-    }
-
-    async claimTokens() {
-        if (!this.isConnected || !this.userAddress || !this.web3) {
-            alert('Please connect your wallet first.');
-            return;
-        }
-
-        try {
-            document.getElementById('claimSection').querySelector('button').disabled = true;
-            document.getElementById('claimSection').querySelector('button').textContent = 'Claiming...';
-
-            const contract = new this.web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-            const result = await contract.methods.claimTokens().send({
-                from: this.userAddress,
-                gas: 300000
-            });
-
-            alert('Tokens claimed successfully!');
-            await this.updateUserStats();
-
-        } catch (error) {
-            console.error('Error claiming tokens:', error);
-            if (error.code === 4001) {
-                alert('Transaction was rejected by your wallet.');
-            } else {
-                alert('Token claim failed. Please try again.');
-            }
-        } finally {
-            document.getElementById('claimSection').querySelector('button').disabled = false;
-            document.getElementById('claimSection').querySelector('button').textContent = 'Claim Your Tokens';
-        }
-    }
-
-    showFallbackData() {
-        document.getElementById('totalRaisedUSD').textContent = '$0';
-        document.getElementById('presaleProgress').textContent = '0%';
-        document.getElementById('daysLeft').textContent = '30';
-        document.getElementById('totalContributors').textContent = '0';
-    }
+  }
 }
 
-// Global functions
-function setAmount(amount) {
-    document.getElementById('contributionAmount').value = amount;
-    dashboardManager.calculateTokens(amount);
+async function connectWalletConnect() {
+  // WalletConnect v2
+  if (typeof WalletConnectEthereumProvider === 'undefined') {
+    alert('WalletConnect not loaded. Check script tags.');
+    return;
+  }
+
+  const provider = await WalletConnectEthereumProvider.init({
+    projectId: 'e50f0a4298c581eadf73071430522379', // Replace with your WalletConnect Cloud project ID
+    chains: [CHAIN_ID],
+    showQrModal: true,
+    metadata: {
+      name: 'GenetAi Presale',
+      description: 'Connect to contribute to the presale',
+      url: window.location.href,
+      icons: [] // Add logo URLs if available
+    }
+  });
+
+  try {
+    await provider.connect();
+    web3 = new Web3(provider);
+    const accounts = await web3.eth.getAccounts();
+    userAccount = accounts[0];
+    await handleConnection();
+  } catch (error) {
+    console.error('WalletConnect failed:', error);
+    alert('WalletConnect connection failed. Check console.');
+  }
 }
 
-function contribute() {
-    dashboardManager.contribute();
-}
-
-function claimTokens() {
-    dashboardManager.claimTokens();
-}
-
-function connectMetaMask() {
-    dashboardManager.connectMetaMask();
-}
-
-function connectWalletConnect() {
-    dashboardManager.connectWalletConnect();
+async function handleConnection() {
+  isConnected = true;
+  updateWalletUI();
+  await updateUserStats();
+  document.getElementById('contributeBtn').disabled = false;
+  document.getElementById('contributeBtn').textContent = 'Contribute Now';
+  const statusDot = document.getElementById('connectionStatus');
+  statusDot.textContent = 'Connected';
+  statusDot.className = 'status-dot connected';
 }
 
 function disconnectWallet() {
-    dashboardManager.disconnectWallet();
+  isConnected = false;
+  userAccount = null;
+  updateWalletUI();
+  document.getElementById('contributeBtn').disabled = true;
+  document.getElementById('contributeBtn').textContent = 'Connect Wallet to Contribute';
+  const statusDot = document.getElementById('connectionStatus');
+  statusDot.textContent = 'Disconnected';
+  statusDot.className = 'status-dot disconnected';
+  document.getElementById('walletInfoCompact').style.display = 'none';
+  document.getElementById('userStats').style.display = 'none';
+  document.getElementById('claimSection').style.display = 'none';
+}
+
+function toggleWalletDropdown() {
+  const dropdown = document.getElementById('walletDropdown');
+  dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
 }
 
 function closeModal() {
-    document.getElementById('walletConnectModal').style.display = 'none';
+  document.getElementById('walletConnectModal').style.display = 'none';
 }
 
-function refreshTransactions() {
+// Contribution Functions
+function setAmount(amount) {
+  document.getElementById('contributionAmount').value = amount;
+  updateTokenCalculation();
+}
+
+function updateTokenCalculation() {
+  const amount = parseFloat(document.getElementById('contributionAmount').value) || 0;
+  const tokens = (amount / TOKEN_PRICE_BNB).toFixed(0);
+  document.getElementById('tokenAmount').textContent = tokens;
+  document.getElementById('tokenPriceDisplay').textContent = `${TOKEN_PRICE_BNB} BNB`;
+}
+
+async function contribute() {
+  if (!isConnected || !userAccount) {
+    alert('Wallet not connected.');
+    return;
+  }
+
+  const amountInput = parseFloat(document.getElementById('contributionAmount').value);
+  if (amountInput < 0.01 || amountInput > 10) {
+    alert('Contribution must be between 0.01 and 10 BNB.');
+    return;
+  }
+
+  const amount = web3.utils.toWei(amountInput.toString(), 'ether');
+
+  try {
+    const gasEstimate = await contract.methods.contribute().estimateGas({ from: userAccount, value: amount });
+    await contract.methods.contribute().send({
+      from: userAccount,
+      value: amount,
+      gas: gasEstimate + 50000 // Buffer
+    });
+    alert('Contribution successful!');
+    updateUserStats();
+    updateLiveData();
+    document.getElementById('contributionAmount').value = '';
+    updateTokenCalculation();
+  } catch (error) {
+    console.error('Contribution failed:', error);
+    if (error.code === 4001) {
+      alert('Transaction rejected.');
+    } else if (error.message.includes('insufficient funds')) {
+      alert('Insufficient BNB balance.');
+    } else {
+      alert('Transaction failed. Check console.');
+    }
+  }
+}
+
+async function claimTokens() {
+  if (!isConnected || !userAccount) {
+    alert('Wallet not connected.');
+    return;
+  }
+
+  try {
+    const gasEstimate = await contract.methods.claimTokens().estimateGas({ from: userAccount });
+    await contract.methods.claimTokens().send({
+      from: userAccount,
+      gas: gasEstimate
+    });
+    alert('Tokens claimed successfully!');
+    updateUserStats();
+  } catch (error) {
+    console.error('Claim failed:', error);
+    alert('Claim failed. Presale may not have ended yet.');
+  }
+}
+
+// Live Data Updates
+async function updateLiveData() {
+  try {
+    const totalRaised = web3.utils.fromWei(await contract.methods.totalRaised().call(), 'ether');
+    const totalContributors = await contract.methods.totalContributors().call();
+    const tokensSold = await contract.methods.tokensSold().call();
+    const averageContribution = totalRaised > 0 ? (parseFloat(totalRaised) / totalContributors).toFixed(4) : 0;
+
+    // Update UI
+    document.getElementById('totalRaisedUSD').textContent = `$${(parseFloat(totalRaised) * 150).toLocaleString()}`; // Assume $150/BNB
+    document.getElementById('raisedBNB').textContent = totalRaised;
+    document.getElementById('targetBNB').textContent = HARD_CAP_BNB.toFixed(2);
+    document.getElementById('remainingBNB').textContent = (HARD_CAP_BNB - parseFloat(totalRaised)).toFixed(2);
+    document.getElementById('totalContributors').textContent = totalContributors;
+    document.getElementById('averageContribution').textContent = `${averageContribution} BNB`;
+    document.getElementById('tokensSold').textContent = web3.utils.fromWei(tokensSold, 'ether');
+    document.getElementById('liveTokensSold').textContent = web3.utils.fromWei(tokensSold, 'ether');
+    document.getElementById('liveTokenPrice').textContent = `${TOKEN_PRICE_BNB} BNB`;
+
+    const progress = Math.min((parseFloat(totalRaised) / HARD_CAP_BNB * 100), 100).toFixed(1);
+    document.getElementById('presaleProgress').textContent = `${progress}%`;
+    document.getElementById('progressPercent').textContent = `${progress}%`;
+    document.getElementById('progressBarFill').style.width = `${progress}%`;
+
+    document.getElementById('lastUpdated').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+    refreshTransactions();
+  } catch (error) {
+    console.error('Failed to update live data:', error);
+  }
+}
+
+async function updateUserStats() {
+  if (!userAccount) return;
+
+  try {
+    const userContrib = web3.utils.fromWei(await contract.methods.userContribution(userAccount).call(), 'ether');
+    const userTokens = web3.utils.fromWei(await contract.methods.userTokens(userAccount).call(), 'ether');
+    const presaleEnded = await contract.methods.presaleEnded().call();
+
+    document.getElementById('userContribution').textContent = `${parseFloat(userContrib).toFixed(4)} BNB`;
+    document.getElementById('userTokens').textContent = `${parseInt(userTokens).toLocaleString()} $GENE`;
+
+    // Show compact wallet info
+    const shortAddress = `${userAccount.slice(0, 6)}...${userAccount.slice(-4)}`;
+    const balance = web3.utils.fromWei(await web3.eth.getBalance(userAccount), 'ether');
+    document.getElementById('walletAddressCompact').textContent = shortAddress;
+    document.getElementById('walletBalanceCompact').textContent = `${parseFloat(balance).toFixed(4)} BNB`;
+
+    document.getElementById('walletInfoCompact').style.display = 'block';
+    document.getElementById('userStats').style.display = 'block';
+
+    // Show claim if ended and tokens > 0
+    if (presaleEnded && parseInt(userTokens) > 0) {
+      document.getElementById('claimSection').style.display = 'block';
+    }
+  } catch (error) {
+    console.error('Failed to update user stats:', error);
+  }
+}
+
+function updateWalletUI() {
+  const status = document.getElementById('walletStatus');
+  const addressEl = document.getElementById('walletAddress');
+  const balanceEl = document.getElementById('walletBalance');
+
+  if (isConnected && userAccount) {
+    status.textContent = 'Connected';
+    status.className = 'wallet-status connected';
+    const shortAddress = `${userAccount.slice(0, 6)}...${userAccount.slice(-4)}`;
+    addressEl.textContent = shortAddress;
+    addressEl.style.display = 'block';
+
+    // Update balance
+    web3.eth.getBalance(userAccount).then(balance => {
+      const bnb = web3.utils.fromWei(balance, 'ether');
+      balanceEl.textContent = `${parseFloat(bnb).toFixed(4)} BNB`;
+      balanceEl.style.display = 'block';
+    });
+  } else {
+    status.textContent = 'Not Connected';
+    status.className = 'wallet-status disconnected';
+    addressEl.style.display = 'none';
+    balanceEl.style.display = 'none';
+  }
+}
+
+function updateDaysLeft() {
+  // Static for demo; replace with contract end time
+  document.getElementById('daysLeft').textContent = '30';
+}
+
+// Transactions
+async function refreshTransactions() {
+  try {
+    const latestBlock = await web3.eth.getBlockNumber();
+    const fromBlock = Math.max(latestBlock - 100, 0); // Last 100 blocks
+    const events = await contract.getPastEvents('Contribution', { fromBlock, toBlock: 'latest' });
+
     const transactionsList = document.getElementById('transactionsList');
-    transactionsList.innerHTML = `
+    if (events.length === 0) {
+      transactionsList.innerHTML = '<div class="no-transactions">No contributions yet.</div>';
+      return;
+    }
+
+    let html = '';
+    events.slice(-10).reverse().forEach(event => { // Last 10
+      const contrib = web3.utils.fromWei(event.returnValues.amount, 'ether');
+      const shortAddr = event.returnValues.contributor.slice(0, 10) + '...';
+      html += `
         <div class="transaction-item">
-            <div class="transaction-icon">
-                <i class="fas fa-sync fa-spin"></i>
-            </div>
-            <div class="transaction-details">
-                <div class="transaction-amount">Refreshing transactions...</div>
-                <div class="transaction-time">Please wait</div>
-            </div>
+          <span class="tx-address">${shortAddr}</span>
+          <span class="tx-amount">${parseFloat(contrib).toFixed(4)} BNB</span>
+          <span class="tx-time">${new Date().toLocaleString()}</span> <!-- Approx timestamp -->
         </div>
-    `;
-    
-    setTimeout(() => {
-        transactionsList.innerHTML = `
-            <div class="transaction-item">
-                <div class="transaction-icon">
-                    <i class="fas fa-info-circle"></i>
-                </div>
-                <div class="transaction-details">
-                    <div class="transaction-amount">Transaction history coming soon</div>
-                    <div class="transaction-time">Live updates from BSC Testnet</div>
-                </div>
-            </div>
-        `;
-    }, 2000);
+      `;
+    });
+    transactionsList.innerHTML = html;
+  } catch (error) {
+    console.error('Failed to fetch transactions:', error);
+    document.getElementById('transactionsList').innerHTML = '<div class="error">Failed to load transactions.</div>';
+  }
 }
 
-// Initialize dashboard
-let dashboardManager;
-document.addEventListener('DOMContentLoaded', function() {
-    dashboardManager = new DashboardManager();
-});
+// Static updates
+document.getElementById('liveTokenPrice').textContent = `${TOKEN_PRICE_BNB} BNB`;
+
+// Init on load
+window.addEventListener('load', init);
+
+// Handle chain changed/account changed
+if (window.ethereum) {
+  window.ethereum.on('chainChanged', () => window.location.reload());
+  window.ethereum.on('accountsChanged', () => {
+    if (window.ethereum.selectedAddress === null) {
+      disconnectWallet();
+    } else {
+      window.location.reload();
+    }
+  });
+}

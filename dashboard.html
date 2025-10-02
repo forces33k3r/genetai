@@ -32,7 +32,7 @@
                         <div class="wallet-status disconnected" id="walletStatus">Not Connected</div>
                         <div class="wallet-dropdown">
                             <button class="btn btn-primary" id="connectWalletBtn">Connect Wallet</button>
-                            <div class="wallet-dropdown-content" id="walletDropdown">
+                            <div class="wallet-dropdown-content" id="walletDropdown" style="display: none;">
                                 <button class="wallet-option" onclick="connectMetaMask()">
                                     <i class="fab fa-metamask"></i>
                                     MetaMask
@@ -149,7 +149,7 @@
                     <div class="card-header">
                         <h3>Contribute to Presale</h3>
                         <div class="connection-status">
-                            <span class="status-dot" id="connectionStatus"></span>
+                            <span class="status-dot disconnected" id="connectionStatus"></span>
                             <span id="networkStatus">BSC Testnet</span>
                         </div>
                     </div>
@@ -294,8 +294,8 @@
         </div>
     </div>
 
-    <!-- WalletConnect Modal -->
-    <div id="walletConnectModal" class="modal">
+    <!-- WalletConnect Modal (Legacy; v2 handles QR internally, but kept for fallback) -->
+    <div id="walletConnectModal" class="modal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Connect Wallet</h3>
@@ -364,8 +364,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
-    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
-    <script src="https://unpkg.com/qrcode@1.5.0/build/qrcode.min.js"></script>
+    <script src="https://unpkg.com/@walletconnect/ethereum-provider@2.14.0/dist/umd/index.min.js"></script>
     <script src="./scripts/dashboard.js"></script>
 </body>
 </html>
